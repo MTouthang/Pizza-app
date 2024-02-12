@@ -3,7 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import errorMiddleware from './middlewares/error.middleware.js';
-import userRoute from './routes/user.route.js';
+import userRoute from './routes/auth.route.js';
 const app = express();
 
 // built-in middlewares
