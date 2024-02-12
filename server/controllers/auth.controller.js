@@ -2,6 +2,8 @@ import asyncHandler from '../middlewares/asyncHandler.middleware.js';
 import User from '../models/user.model.js';
 import AppError from '../utils/appError.utils.js';
 import cloudinary from 'cloudinary';
+import sendEmail from '../utils/sendMail.utils.js';
+import crypto from 'crypto';
 
 import fs from 'fs';
 
@@ -255,11 +257,14 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
     'host'
   )}/api/v1/user/reset/${resetToken}`;
 
-  // TODO: only the token can be sent to the user mail
-
   // sent the resetPasswordUrl to the user email
   const subject = 'Reset Password';
-  const message = `You can reset your password by clicking <a href=${resetPasswordUrl} target="_blank"> Reset your password</a>\n if the above link does not work for some reason then copy paste this link in new tab ${resetPasswordUrl}.\n if you have not request this, kindly ignore.`;
+  const message = `
+  <p>You can reset your password by clicking <a href=${resetPasswordUrl} target="_blank"> Reset your password</a>. If the above link does not work for some reason, then copy and paste this link in a new tab:</p>
+<p> ${resetPasswordUrl}</p>
+<p>If you have not requested this, kindly ignore. Note that the reset token is valid for only 10 minutes.</p>
+
+  `;
 
   try {
     await sendEmail(email, subject, message);
@@ -280,4 +285,67 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
       500
     );
   }
+});
+
+/**
+ *
+ * @resetPassword
+ * @ROUTE @POST {{URL}}/api/v1/user/reset/resetToken
+ * @return sent mail to the user email and reset a password
+ * @ACCESS private
+ *
+ */
+export const resetPassword = asyncHandler(async (req, res, next) => {
+  // extracting resetToken from req.params object
+  const { resetToken } = req.params;
+
+  // extracting password from req.body object
+  // TODO:confirm-password can be added
+  const { password } = req.body;
+
+  /* we are again hashing the resetToken  using sha256 since we have stored our resetToken in DB using the same algorithm */
+
+  const forgotPasswordToken = crypto
+    .createHash('Sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  // check if password is not there then send response saying password is required.
+  if (!password) {
+    return next(new AppError('Password is required', 400));
+  }
+
+  // checking if token matches in DB and if it is still valid (not expired)
+  const user = await User.findOne({
+    forgotPasswordToken,
+    forgotPasswordExpiry: {
+      $gt: new Date(
+        Date.now()
+      ) /* $gt will help us check for greater than value, with this we can
+      check if token is valid or expired */,
+    },
+  });
+
+  //if not found or expired send the response
+  if (!user) {
+    return next(
+      new AppError('Token is invalid or expired, please try again', 400)
+    );
+  }
+
+  // update the password if token is valid and not expired
+  user.password = password;
+
+  //making forgotPasswordToken and forgotPasswordExpiry to undefined
+  user.forgotPasswordExpiry = undefined;
+  user.forgotPasswordToken = undefined;
+
+  // saving the updated user value
+  await user.save();
+
+  // Sending the response when everything goes good
+  res.status(200).json({
+    success: true,
+    message: 'Password changed successfully',
+  });
 });
