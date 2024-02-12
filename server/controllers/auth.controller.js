@@ -165,7 +165,6 @@ export const userLogout = asyncHandler(async (req, res, next) => {
 
 /**
  *
- * TODO: send mail after password is changes successfully
  * @ChangePassword
  * @ROUTE @POST {{URL}}/api/v1/user/change-password
  * @return message with password updated or changed
@@ -186,6 +185,7 @@ export const changePassword = asyncHandler(async (req, res, next) => {
 
   // find the user by ID and selecting the password
   const user = await User.findById(id).select('+password');
+  let email = user.email;
 
   // check user is present
   if (!user) {
@@ -209,10 +209,26 @@ export const changePassword = asyncHandler(async (req, res, next) => {
   // setting the password undefined so that it wont get sent in the response
   user.password = undefined;
 
+  // sent the resetPasswordUrl to the user email
+  const subject = 'Password updated';
+  const message = `This is to confirm that your password has been updated successfully`;
+
+  let mailUpdate = false;
+
+  try {
+    await sendEmail(email, subject, message);
+    mailUpdate = true;
+  } catch (error) {
+    mailUpdate = false;
+  }
+
+  // if email sent successfully send the success response
   // sent success message
   res.status(200).json({
     success: true,
-    message: 'User password updated successfully',
+    message: `Password change successfully with ${
+      mailUpdate ? 'with mail update' : 'with failed mail update'
+    }`,
   });
 });
 
