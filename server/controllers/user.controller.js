@@ -1,6 +1,8 @@
 import asyncHandler from '../middlewares/asyncHandler.middleware.js';
 import User from '../models/user.model.js';
 import AppError from '../utils/appError.utils.js';
+import cloudinary from 'cloudinary';
+import fs from 'fs';
 
 /**
  *
@@ -54,11 +56,9 @@ export const registerUser = asyncHandler(async (req, res, next) => {
   if (req.file) {
     try {
       const result = await cloudinary.v2.uploader.upload(req.file.path, {
-        folder: 'ols',
+        folder: 'users-manage',
         width: 250,
         height: 250,
-        gravity: 'faces',
-        crop: 'fill',
       });
 
       // If success
@@ -68,10 +68,11 @@ export const registerUser = asyncHandler(async (req, res, next) => {
         user.avatar.secure_url = result.secure_url;
 
         // After successful upload remove the file from local storage
-        fs.rm(`uploads/${req.file.filename}`);
+        fs.rm(`uploads/${req.file.filename}`, (error) => {
+          next(new AppError(`${error}`, 500));
+        });
+        // Save the user object
       }
-
-      // Save the user object
       await user.save();
     } catch (error) {
       return next(
