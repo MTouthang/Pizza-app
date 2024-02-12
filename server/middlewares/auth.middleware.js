@@ -2,6 +2,7 @@ import AppError from '../utils/appError.utils.js';
 import asyncHandler from './asyncHandler.middleware.js';
 import jwt from 'jsonwebtoken';
 export const isLoggedIn = asyncHandler(async (req, res, next) => {
+  // TODO: check for the header as well
   const { token } = req.cookies;
 
   if (!token) {
