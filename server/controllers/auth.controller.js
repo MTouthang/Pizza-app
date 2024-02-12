@@ -69,7 +69,7 @@ export const registerUser = asyncHandler(async (req, res, next) => {
 
         // After successful upload remove the file from local storage
         fs.rm(`uploads/${req.file.filename}`, (error) => {
-          next(new AppError(`${error}`, 500));
+          console.log(error);
         });
         // Save the user object
       }
