@@ -11,6 +11,6 @@ cartRoute.post(
   addToCart
 );
 
-cartRoute.get('/', isLoggedIn, authorizeRoles('USER'), viewCart);
+cartRoute.get('/', isLoggedIn, authorizeRoles('USER', 'ADMIN'), viewCart);
 
 export default cartRoute;

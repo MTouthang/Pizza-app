@@ -59,7 +59,6 @@ export const addToCart = asyncHandler(async (req, res, next) => {
  * @ACCESS private
  *
  */
-
 export const viewCart = asyncHandler(async (req, res, next) => {
   const cart = await Cart.findOne({ user: req.user.id });
   if (!cart) {
