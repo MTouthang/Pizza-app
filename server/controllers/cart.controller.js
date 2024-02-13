@@ -7,7 +7,7 @@ import AppError from '../utils/appError.utils.js';
  *
  * @addToCart
  * @ROUTE @POST {{URL}}/api/v1/cart/product/:productId
- * @return product's data with success message
+ * @return Product cart successfully created message
  * @ACCESS private
  *
  */
@@ -46,6 +46,28 @@ export const addToCart = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: 'Product added to cart successfully',
+    cart,
+  });
+});
+
+/**
+ *
+ * @viewCart
+ * @desc view product cart
+ * @ROUTE @POST {{URL}}/api/v1/cart/
+ * @return cart data
+ * @ACCESS private
+ *
+ */
+
+export const viewCart = asyncHandler(async (req, res, next) => {
+  const cart = await Cart.findOne({ user: req.user.id });
+  if (!cart) {
+    return next(new AppError('Cart not available', 404));
+  }
+
+  res.status(200).json({
+    success: true,
     cart,
   });
 });

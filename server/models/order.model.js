@@ -7,16 +7,14 @@ const orderSchema = new Schema(
       ref: 'User',
       required: true,
     },
-    products: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Cart',
-      },
-    ],
+    products: {
+      type: Schema.Types.ObjectId,
+      ref: 'Cart',
+    },
     paymentMethod: {
       type: String,
       enum: ['OFFLINE', 'ONLINE'],
-      default: 'Offline',
+      default: 'OFFLINE',
     },
     status: {
       type: String,
