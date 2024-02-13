@@ -3,8 +3,9 @@ import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import errorMiddleware from "./middlewares/error.middleware.js";
-import userRoute from "./routes/auth.route.js";
-import usersRoute from "./routes/user.route.js";
+import authRoute from "./routes/auth.route.js";
+import productRoute from "./routes/product.route.js";
+import userRoute from "./routes/user.route.js";
 const app = express();
 
 // built-in middlewares
@@ -17,8 +18,9 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 
 // user route api
-app.use("/api/v1/user", userRoute);
-app.use("/api/v1/user", usersRoute);
+app.use("api/v1/user", userRoute);
+app.use("/api/v1/user", authRoute);
+app.use("/api/v1/products", productRoute);
 
 // health-check
 app.get("/ping", (_req, res) => {
