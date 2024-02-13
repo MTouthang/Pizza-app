@@ -70,3 +70,29 @@ export const viewCart = asyncHandler(async (req, res, next) => {
     cart,
   });
 });
+
+/**
+ *
+ * @clearCart
+ * @desc clear product cart
+ * @ROUTE @POST {{URL}}/api/v1/cart/:cartId
+ * @return cart successfully clear
+ * @ACCESS private
+ *
+ */
+export const clearCart = asyncHandler(async (req, res, next) => {
+  const { cartId } = req.params;
+  const cart = await Cart.findOne({ user: req.user.id });
+  if (!cart) {
+    return next(new AppError('Cart not available', 404));
+  }
+
+  /* TODO: instead of delete, update the cart schema so that the items can be remove 
+   one by one */
+  await Cart.findByIdAndDelete(cartId);
+
+  res.status(200).json({
+    success: true,
+    message: 'Cart successfully Clear and delete',
+  });
+});
