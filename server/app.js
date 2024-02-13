@@ -17,7 +17,7 @@ app.use(cookieParser());
 app.use(morgan('dev'));
 
 // user route api
-app.use('/api/v1/user', authRoute);
+app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/products', productRoute);
 
 // health-check
