@@ -16,7 +16,6 @@ export const createProduct = asyncHandler(async (req, res, next) => {
   // extract data
   const { productName, description, price, category, quantity, inStock } =
     req.body;
-  console.log(req.body);
 
   // check if the data is there or not, if not throw error message
   if (
