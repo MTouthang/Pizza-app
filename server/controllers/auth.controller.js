@@ -10,7 +10,7 @@ import fs from 'fs';
 /**
  *
  * @REGISTRATION
- * @ROUTE @POST {{URL}}/api/v1/register
+ * @ROUTE @POST {{URL}}/api/v1/user/register
  * @return user's data
  * @ACCESS public
  *

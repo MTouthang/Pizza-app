@@ -4,6 +4,7 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import errorMiddleware from './middlewares/error.middleware.js';
 import authRoute from './routes/auth.route.js';
+import productRoute from './routes/product.route.js';
 const app = express();
 
 // built-in middlewares
@@ -17,6 +18,7 @@ app.use(morgan('dev'));
 
 // user route api
 app.use('/api/v1/user', authRoute);
+app.use('/api/v1/products', productRoute);
 
 // health-check
 app.get('/ping', (_req, res) => {
