@@ -10,20 +10,9 @@ const orderSchema = new Schema(
     products: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'Product',
-        required: true,
+        ref: 'Cart',
       },
     ],
-    quantity: {
-      type: Number,
-      required: true,
-      default: 1,
-    },
-    totalPrice: {
-      type: Number,
-      require: true,
-      default: 0,
-    },
     paymentMethod: {
       type: String,
       enum: ['OFFLINE', 'ONLINE'],
@@ -33,6 +22,15 @@ const orderSchema = new Schema(
       type: String,
       enum: ['ORDERED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'],
       default: 'ORDERED',
+    },
+    address: {
+      type: String,
+      minlength: [
+        10,
+        "Address character's length should consist of more than 10",
+      ],
+      required: [true, 'Address is required'],
+      maxlength: [60, 'Address Name should be not more than 60 characters'],
     },
   },
   {
