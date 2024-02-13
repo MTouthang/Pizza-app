@@ -222,6 +222,7 @@ export const changePassword = asyncHandler(async (req, res, next) => {
  * @ACCESS public
  *
  */
+
 export const forgotPassword = asyncHandler(async (req, res, next) => {
   // extract  email from the request body
   const { email } = req.body;
