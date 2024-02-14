@@ -8,8 +8,21 @@ const orderSchema = new Schema(
       required: true,
     },
 
-    productDetails: {
-      type: Object,
+    quantity: {
+      type: Number,
+      required: [true, 'Quantity is required!'],
+    },
+    items: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Product',
+        required: true,
+      },
+    ],
+
+    totalPrice: {
+      type: Number,
+      required: true,
     },
 
     paymentMethod: {
