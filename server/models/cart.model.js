@@ -17,7 +17,7 @@ const cartSchema = new Schema(
     quantity: {
       type: Number,
       required: true,
-      default: 1,
+      default: 0,
     },
     totalPrice: {
       type: Number,
@@ -30,5 +30,5 @@ const cartSchema = new Schema(
   }
 );
 
-const Cart = model('User', cartSchema);
+const Cart = model('Cart', cartSchema);
 export default Cart;
