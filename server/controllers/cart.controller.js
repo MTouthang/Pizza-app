@@ -11,7 +11,7 @@ import AppError from '../utils/appError.utils.js';
  * @ACCESS private
  *
  */
-// TODO: decrement product quantity when it's added to cart
+
 // TODO: count for same product being added.
 export const addToCart = asyncHandler(async (req, res, next) => {
   const { productId } = req.params;
@@ -20,6 +20,12 @@ export const addToCart = asyncHandler(async (req, res, next) => {
   const product = await Product.findById(productId);
   if (!product) {
     return next(new AppError('Product not found', 404));
+  }
+
+  // Check if the product quantity is greater than 0
+  if (product.quantity <= 0) {
+    product.inStock = false;
+    return next(new AppError('Product out of stock', 400));
   }
 
   // Check if the user already has a cart
@@ -44,6 +50,10 @@ export const addToCart = asyncHandler(async (req, res, next) => {
 
   // Save the updated cart
   await cart.save();
+
+  // Decrease the product quantity by 1 in the database
+  product.quantity -= 1;
+  await product.save();
 
   res.status(200).json({
     success: true,
