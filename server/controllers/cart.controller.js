@@ -11,6 +11,7 @@ import AppError from '../utils/appError.utils.js';
  * @ACCESS private
  *
  */
+// TODO: decrement product quantity when it's added to cart
 export const addToCart = asyncHandler(async (req, res, next) => {
   const { productId } = req.params;
 
