@@ -7,11 +7,12 @@ import {
   resetPassword,
   userLogout,
 } from '../controllers/auth.controller.js';
-import upload from '../middlewares/multer.middleware.js';
+
 import { isLoggedIn } from '../middlewares/auth.middleware.js';
+import cloudinaryImageUpload from '../middlewares/cloudinaryImageUpload.js';
 const authRoute = express.Router();
 
-authRoute.post('/register', upload.single('avatar'), registerUser);
+authRoute.post('/register', cloudinaryImageUpload('avatar'), registerUser);
 authRoute.post('/login', loginUser);
 authRoute.post('/logout', userLogout);
 

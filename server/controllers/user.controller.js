@@ -1,7 +1,7 @@
-import asyncHandler from "../middlewares/asyncHandler.middleware.js";
-import User from "../models/user.model.js";
-import AppError from "../utils/appError.utils.js";
-import sendEmail from "../utils/sendMail.utils.js";
+import asyncHandler from '../middlewares/asyncHandler.middleware.js';
+import User from '../models/user.model.js';
+import AppError from '../utils/appError.utils.js';
+import sendEmail from '../utils/sendMail.utils.js';
 
 /**
  *
@@ -17,13 +17,13 @@ export const viewProfile = asyncHandler(async (req, res, next) => {
   const user = await User.findById(userId);
   if (!user) {
     return next(
-      new AppError("Not able to fetch the logged-in user details", 401)
+      new AppError('Not able to fetch the logged-in user details', 401)
     );
   }
   res.status(200).json({
     success: true,
-    message: "User logged in successfully",
-    user
+    message: 'User logged in successfully',
+    user,
   });
 });
 
@@ -41,7 +41,7 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
   const user = await User.findById(userId);
   if (!user) {
     return next(
-      new AppError("Not able to fetch the logged-in user details", 401)
+      new AppError('Not able to fetch the logged-in user details', 401)
     );
   }
 
@@ -49,7 +49,7 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
   update.firstName = req.body.firstName || user.firstName;
   update.lastName = req.body.lastName || user.lastName;
   update.mobileNumber = req.body.mobileNumber || user.mobileNumber;
-  update.avatar = req.body.avatar || user.avatar;
+  update.avatar = req.user.avatar || user.avatar;
 
   const updatedUser = await User.findOneAndUpdate(
     { _id: req.user.id },
@@ -59,8 +59,8 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "User logged in successfully",
-    updatedUser
+    message: 'User logged in successfully',
+    updatedUser,
   });
 });
 
@@ -78,20 +78,20 @@ export const deleteProfile = asyncHandler(async (req, res, next) => {
 
   const user = await User.findByIdAndDelete({ _id: userId });
   if (!user) {
-    return next(new AppError("Not able to delete user", 401));
+    return next(new AppError('Not able to delete user', 401));
   }
 
   // logout by clearing cookies
-  res.cookie("token", null, {
-    secure: process.env.NODE_ENV === "production" ? true : false,
+  res.cookie('token', null, {
+    secure: process.env.NODE_ENV === 'production' ? true : false,
     maxAge: 0,
-    httpOnly: true
+    httpOnly: true,
   });
 
   res.status(200).json({
     success: true,
-    message: "User delete in successfully",
-    user
+    message: 'User delete in successfully',
+    user,
   });
 });
 
@@ -118,14 +118,14 @@ export const listAllUsers = asyncHandler(async (req, res, next) => {
   if (endIndex < totalUsers) {
     result.next = {
       pageNumber: PAGE + 1,
-      limit: LIMIT
+      limit: LIMIT,
     };
   }
 
   if (startIndex > 0) {
     result.previous = {
       pageNumber: PAGE - 1,
-      limit: LIMIT
+      limit: LIMIT,
     };
   }
 
@@ -138,8 +138,8 @@ export const listAllUsers = asyncHandler(async (req, res, next) => {
     status: 200,
     success: true,
     message:
-      result.users.length > 0 ? "Fetch users successfully" : "No user found",
-    data: result
+      result.users.length > 0 ? 'Fetch users successfully' : 'No user found',
+    data: result,
   });
 });
 
@@ -157,13 +157,13 @@ export const userDerails = asyncHandler(async (req, res, next) => {
 
   const user = await User.findById(userId);
   if (!user) {
-    return next(new AppError("Not able to fetch the user details", 401));
+    return next(new AppError('Not able to fetch the user details', 401));
   }
 
   res.status(200).json({
     success: true,
-    message: "User logged in successfully",
-    user
+    message: 'User logged in successfully',
+    user,
   });
 });
 
@@ -181,7 +181,7 @@ export const updateUser = asyncHandler(async (req, res, next) => {
   const user = await User.findById(userId);
   if (!user) {
     return next(
-      new AppError("Not able to fetch the logged-in user details", 401)
+      new AppError('Not able to fetch the logged-in user details', 401)
     );
   }
 
@@ -201,8 +201,8 @@ export const updateUser = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "User logged in successfully",
-    updatedUser
+    message: 'User logged in successfully',
+    updatedUser,
   });
 });
 
@@ -212,11 +212,11 @@ export const deleteUser = asyncHandler(async (req, res, next) => {
   const DeletedUser = await User.findById(userId);
 
   if (!DeletedUser) {
-    return next(new AppError("Not able to delete user", 401));
+    return next(new AppError('Not able to delete user', 401));
   }
 
   // sent the resetPasswordUrl to the user email
-  const subject = "Delete Account";
+  const subject = 'Delete Account';
   const message = `
   <p>Your account is removed by admin</p>`;
 
@@ -226,12 +226,12 @@ export const deleteUser = asyncHandler(async (req, res, next) => {
     // if email sent successfully send the success response
     res.status(200).json({
       success: true,
-      message: "User deleted successfully",
-      DeletedUser
+      message: 'User deleted successfully',
+      DeletedUser,
     });
   } catch (error) {
     return next(
-      new AppError(error.message || "Something went wrong, please try again"),
+      new AppError(error.message || 'Something went wrong, please try again'),
       500
     );
   }

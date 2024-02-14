@@ -1,8 +1,6 @@
-import asyncHandler from "../middlewares/asyncHandler.middleware.js";
-import Product from "../models/product.model.js";
-import AppError from "../utils/appError.utils.js";
-import cloudinary from "cloudinary";
-import fs from "fs";
+import asyncHandler from '../middlewares/asyncHandler.middleware.js';
+import Product from '../models/product.model.js';
+import AppError from '../utils/appError.utils.js';
 
 /**
  *
@@ -26,61 +24,30 @@ export const createProduct = asyncHandler(async (req, res, next) => {
     !quantity ||
     !inStock
   ) {
-    return next(new AppError("All fields are required", 400));
+    return next(new AppError('All fields are required', 400));
   }
 
   // create new product data object
-  const product = await Product.create({
+  const productInfo = await Product.create({
     productName,
     description,
     price,
     category,
     quantity,
     inStock,
-    productImage: {
-      public_id: 135, // for temporary
-      secure_url: "random_url" // for temporary
-    }
+    productImage: req.user?.productImage,
   });
   // If product not created send message response
+  const product = await productInfo.save();
   if (!product) {
-    return next(new AppError("Fail to create product", 400));
-  }
-
-  // run only if product sends a file
-  if (req.file) {
-    try {
-      const result = await cloudinary.v2.uploader.upload(req.file.path, {
-        folder: "product",
-        width: 250,
-        height: 250
-      });
-
-      // If success
-      if (result) {
-        // Set the public_id and secure_url in DB
-        product.productImage.public_id = result.public_id;
-        product.productImage.secure_url = result.secure_url;
-
-        // After successful upload remove the file from local storage
-        fs.rm(`uploads/${req.file.filename}`, (error) => {
-          console.log(error);
-        });
-        // Save the product object
-      }
-      await product.save();
-    } catch (error) {
-      return next(
-        new AppError(error || "File not uploaded, please try again", 400)
-      );
-    }
+    return next(new AppError('Fail to create product', 400));
   }
 
   // If all good send the response to the frontend
   res.status(201).json({
     success: true,
-    message: "Product added successfully",
-    product
+    message: 'Product added successfully',
+    product,
   });
 });
 
@@ -89,13 +56,13 @@ export const productDetails = asyncHandler(async (req, res, next) => {
 
   const product = await Product.findById(productId);
   if (!product) {
-    next(new AppError("not able to find the product"));
+    next(new AppError('not able to find the product'));
   }
 
   res.status(200).json({
     success: true,
-    message: "successful",
-    product
+    message: 'successful',
+    product,
   });
 });
 
@@ -110,21 +77,21 @@ export const listProductsOnCategory = asyncHandler(async (req, res, next) => {
   const endIndex = PAGE * LIMIT;
 
   const totalUsers = await Product.find({
-    category: category
+    category: category,
   }).countDocuments();
 
   const result = {};
   if (endIndex < totalUsers) {
     result.next = {
       pageNumber: PAGE + 1,
-      limit: LIMIT
+      limit: LIMIT,
     };
   }
 
   if (startIndex > 0) {
     result.previous = {
       pageNumber: PAGE - 1,
-      limit: LIMIT
+      limit: LIMIT,
     };
   }
 
@@ -138,9 +105,9 @@ export const listProductsOnCategory = asyncHandler(async (req, res, next) => {
     success: true,
     message:
       result.users.length > 0
-        ? "Fetch products successfully"
-        : "No product found",
-    data: result
+        ? 'Fetch products successfully'
+        : 'No product found',
+    data: result,
   });
 });
 
@@ -150,7 +117,7 @@ export const updateProduct = asyncHandler(async (req, res, next) => {
   const product = Product.findById(productId);
 
   if (!product) {
-    next(new AppError("not able to find product", 400));
+    next(new AppError('not able to find product', 400));
   }
 
   const update = {};
@@ -171,14 +138,14 @@ export const updateProduct = asyncHandler(async (req, res, next) => {
     { _id: product.id },
     update,
     {
-      new: true
+      new: true,
     }
   );
 
   res.status(200).json({
     success: true,
-    message: "successfully updated the product",
-    updatedProduct
+    message: 'successfully updated the product',
+    updatedProduct,
   });
 });
 export const deleteProduct = asyncHandler(async (req, res, next) => {
@@ -187,12 +154,12 @@ export const deleteProduct = asyncHandler(async (req, res, next) => {
   const deletedProduct = await Product.findByIdAndDelete(productId);
 
   if (!deletedProduct) {
-    next(new AppError("not able to delete the product", 400));
+    next(new AppError('not able to delete the product', 400));
   }
 
   res.status(200).json({
     success: true,
-    message: "successfully deleted the product",
-    deletedProduct
+    message: 'successfully deleted the product',
+    deletedProduct,
   });
 });

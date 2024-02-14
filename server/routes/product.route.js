@@ -1,51 +1,50 @@
-import express from "express";
+import express from 'express';
 import {
   createProduct,
   productDetails,
   listProductsOnCategory,
   updateProduct,
-  deleteProduct
-} from "../controllers/product.controller.js";
-import { authorizeRoles, isLoggedIn } from "../middlewares/auth.middleware.js";
-import upload from "../middlewares/multer.middleware.js";
-import cloudinaryImageUpload from "../middlewares/cloudinaryImageUpload.js";
+  deleteProduct,
+} from '../controllers/product.controller.js';
+import { authorizeRoles, isLoggedIn } from '../middlewares/auth.middleware.js';
+import cloudinaryImageUpload from '../middlewares/cloudinaryImageUpload.js';
 
 const productRoute = express.Router();
 
 productRoute.post(
-  "/",
+  '/',
   isLoggedIn,
-  authorizeRoles("ADMIN"),
-  upload.single("productImage"),
+  authorizeRoles('ADMIN'),
+  cloudinaryImageUpload('productImage'),
   createProduct
 );
 
 productRoute.get(
-  "/id/:id",
+  '/id/:id',
   isLoggedIn,
-  authorizeRoles("USER", "ADMIN"),
+  authorizeRoles('USER', 'ADMIN'),
   productDetails
 );
 
 productRoute.get(
-  "/category/:category",
+  '/category/:category',
   isLoggedIn,
-  authorizeRoles("USER", "ADMIN"),
+  authorizeRoles('USER', 'ADMIN'),
   listProductsOnCategory
 );
 
 productRoute.put(
-  "/update-product/:id",
+  '/update-product/:id',
   isLoggedIn,
-  authorizeRoles("ADMIN"),
+  authorizeRoles('ADMIN'),
   cloudinaryImageUpload,
   updateProduct
 );
 
 productRoute.delete(
-  "/update-product/:id",
+  '/update-product/:id',
   isLoggedIn,
-  authorizeRoles("ADMIN"),
+  authorizeRoles('ADMIN'),
   deleteProduct
 );
 
