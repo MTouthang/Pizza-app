@@ -12,6 +12,7 @@ import AppError from '../utils/appError.utils.js';
  *
  */
 // TODO: decrement product quantity when it's added to cart
+// TODO: count for same product being added.
 export const addToCart = asyncHandler(async (req, res, next) => {
   const { productId } = req.params;
 
@@ -55,13 +56,21 @@ export const addToCart = asyncHandler(async (req, res, next) => {
  *
  * @viewCart
  * @desc view product cart
- * @ROUTE @POST {{URL}}/api/v1/cart/
+ * @ROUTE @POST {{URL}}/api/v1/cart/:cartId
  * @return cart data
  * @ACCESS private
  *
  */
 export const viewCart = asyncHandler(async (req, res, next) => {
-  const cart = await Cart.findOne({ user: req.user.id });
+  const { cartId } = req.params;
+  let cart = null;
+
+  if (req.user.role == 'ADMIN') {
+    cart = await Cart.findById(cartId);
+  } else {
+    cart = await Cart.findOne({ user: req.user.id });
+  }
+
   if (!cart) {
     return next(new AppError('Cart not available', 404));
   }
@@ -82,18 +91,37 @@ export const viewCart = asyncHandler(async (req, res, next) => {
  *
  */
 export const clearCart = asyncHandler(async (req, res, next) => {
-  const { cartId } = req.params;
   const cart = await Cart.findOne({ user: req.user.id });
   if (!cart) {
     return next(new AppError('Cart not available', 404));
   }
 
-  /* TODO: instead of delete, update the cart schema so that the items can be remove 
-   one by one */
-  await Cart.findByIdAndDelete(cartId);
+  // clearing the items
+  cart.items = [];
+  cart.quantity = 0;
+  cart.totalPrice = 0;
+  await cart.save();
 
   res.status(200).json({
     success: true,
     message: 'Cart successfully Clear and delete',
+  });
+});
+
+/**
+ *
+ * @listAllCart
+ * @desc list all the product carts of the users
+ * @ROUTE @POST {{URL}}/api/v1/cart/lists
+ * @return cart data
+ * @ACCESS private
+ *
+ */
+export const listAllCart = asyncHandler(async (req, res, next) => {
+  const carts = await Cart.find({});
+  res.status(200).json({
+    success: true,
+    message: carts ? 'carts fetch successfully' : 'No cart available',
+    carts,
   });
 });
