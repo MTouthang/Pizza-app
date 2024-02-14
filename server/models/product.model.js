@@ -14,16 +14,13 @@ const productSchema = new Schema(
       minlength: [5, 'Name must be at least 5 characters'],
       maxlength: [60, 'first Name should be not more than 20 characters'],
     },
-    productImage: {
-      public_id: {
-        type: String,
-        required: true,
+    productImage: new Schema(
+      {
+        imageId: { type: String, required: true },
+        url: { type: String, required: true },
       },
-      secure_url: {
-        type: String,
-        required: true,
-      },
-    },
+      { _id: false }
+    ),
     price: {
       type: Number,
       required: [true, 'Price of the product should be provided!'],
