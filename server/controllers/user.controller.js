@@ -191,7 +191,7 @@ export const updateUser = asyncHandler(async (req, res, next) => {
   update.mobileNumber = req.body.mobileNumber || user.mobileNumber;
   update.avatar = req.body.avatar || user.avatar;
   update.role = req.body.role || user.role;
-  update.avatar = req.user.avatar || update.avatar;
+  update.avatar = req.user.image || update.avatar;
 
   const updatedUser = await User.findOneAndUpdate(
     { _id: req.user.id },
@@ -236,6 +236,5 @@ export const deleteUser = asyncHandler(async (req, res, next) => {
     );
   }
 });
-
 
 export const createUser = asyncHandler(async (req, res, next) => {});

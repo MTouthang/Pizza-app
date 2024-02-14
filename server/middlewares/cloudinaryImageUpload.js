@@ -6,7 +6,7 @@ const cloudinaryImageUpload = async (req, res, next) => {
   try {
     if (file) {
       const result = await cloudinary.uploader.upload(file.avatar.tempFilePath);
-      req.user["avatar"] = {
+      req.user["image"] = {
         imageId: result.public_id,
         url: result.secure_url
       };
