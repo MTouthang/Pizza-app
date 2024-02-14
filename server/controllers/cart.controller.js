@@ -72,7 +72,7 @@ export const viewCart = asyncHandler(async (req, res, next) => {
   }
 
   if (!cart) {
-    return next(new AppError('Cart not available', 404));
+    return next(new AppError('Cart not available with the given cart ID', 404));
   }
 
   res.status(200).json({
@@ -123,5 +123,29 @@ export const listAllCart = asyncHandler(async (req, res, next) => {
     success: true,
     message: carts ? 'carts fetch successfully' : 'No cart available',
     carts,
+  });
+});
+
+/**
+ *
+ * @deleteCart
+ * @desc delete product cart of the user
+ * @ROUTE @DELETE {{URL}}/api/v1/cart/:cartId
+ * @return cart data
+ * @ACCESS private - admin
+ *
+ */
+
+export const deleteCart = asyncHandler(async (req, res, next) => {
+  const { cartId } = req.params;
+  const cart = await Cart.findByIdAndDelete(cartId);
+
+  if (!cart) {
+    return next(new AppError('cart not available', 404));
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "User's product cart deleted successfully",
   });
 });

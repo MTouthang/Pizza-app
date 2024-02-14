@@ -4,6 +4,7 @@ import { authorizeRoles, isLoggedIn } from '../middlewares/auth.middleware.js';
 import {
   addToCart,
   clearCart,
+  deleteCart,
   listAllCart,
   viewCart,
 } from '../controllers/cart.controller.js';
@@ -16,6 +17,8 @@ cartRoute.post(
   authorizeRoles('USER'),
   addToCart
 );
+
+// list all carts
 cartRoute.get('/lists', isLoggedIn, authorizeRoles('ADMIN'), listAllCart);
 
 // view cart details
@@ -26,8 +29,10 @@ cartRoute.get(
   viewCart
 );
 
+// clear cart
 cartRoute.put('/', isLoggedIn, authorizeRoles('USER'), clearCart);
 
-
+// delete cart
+cartRoute.delete('/:cartId', isLoggedIn, authorizeRoles('ADMIN'), deleteCart);
 
 export default cartRoute;
