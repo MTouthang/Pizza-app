@@ -12,6 +12,7 @@ import AppError from '../utils/appError.utils.js';
  *
  */
 // TODO: decrement product quantity when it's added to cart
+// TODO: count for same product being added.
 export const addToCart = asyncHandler(async (req, res, next) => {
   const { productId } = req.params;
 
@@ -55,17 +56,27 @@ export const addToCart = asyncHandler(async (req, res, next) => {
  *
  * @viewCart
  * @desc view product cart
- * @ROUTE @POST {{URL}}/api/v1/cart/
+ * @ROUTE @POST {{URL}}/api/v1/cart/:cartId
  * @return cart data
  * @ACCESS private
  *
  */
 export const viewCart = asyncHandler(async (req, res, next) => {
-  const cart = await Cart.findOne({ user: req.user.id });
+  const { cartId } = req.params;
+
+  // Determine query based on user role
+  const query =
+    req.user.role === 'ADMIN' ? { _id: cartId } : { user: req.user.id };
+
+  // Find the cart
+  const cart = await Cart.findOne(query);
+
+  // Check if the cart exists
   if (!cart) {
-    return next(new AppError('Cart not available', 404));
+    return next(new AppError('Cart not available with the given cart ID', 404));
   }
 
+  // Send response
   res.status(200).json({
     success: true,
     cart,
@@ -82,18 +93,61 @@ export const viewCart = asyncHandler(async (req, res, next) => {
  *
  */
 export const clearCart = asyncHandler(async (req, res, next) => {
-  const { cartId } = req.params;
   const cart = await Cart.findOne({ user: req.user.id });
   if (!cart) {
     return next(new AppError('Cart not available', 404));
   }
 
-  /* TODO: instead of delete, update the cart schema so that the items can be remove 
-   one by one */
-  await Cart.findByIdAndDelete(cartId);
+  // clearing the items
+  cart.items = [];
+  cart.quantity = 0;
+  cart.totalPrice = 0;
+  await cart.save();
 
   res.status(200).json({
     success: true,
     message: 'Cart successfully Clear and delete',
+  });
+});
+
+/**
+ *
+ * @listAllCart
+ * @desc list all the product carts of the users
+ * @ROUTE @POST {{URL}}/api/v1/cart/lists
+ * @return cart data
+ * @ACCESS private
+ *
+ */
+export const listAllCart = asyncHandler(async (req, res, next) => {
+  const carts = await Cart.find({});
+  res.status(200).json({
+    success: true,
+    message: carts ? 'carts fetch successfully' : 'No cart available',
+    carts,
+  });
+});
+
+/**
+ *
+ * @deleteCart
+ * @desc delete product cart of the user
+ * @ROUTE @DELETE {{URL}}/api/v1/cart/:cartId
+ * @return cart data
+ * @ACCESS private - admin
+ *
+ */
+
+export const deleteCart = asyncHandler(async (req, res, next) => {
+  const { cartId } = req.params;
+  const cart = await Cart.findByIdAndDelete(cartId);
+
+  if (!cart) {
+    return next(new AppError('cart not available', 404));
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "User's product cart deleted successfully",
   });
 });
