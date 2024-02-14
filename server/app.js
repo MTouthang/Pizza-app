@@ -6,6 +6,9 @@ import errorMiddleware from "./middlewares/error.middleware.js";
 import authRoute from "./routes/auth.route.js";
 import productRoute from "./routes/product.route.js";
 import userRoute from "./routes/user.route.js";
+
+import fileUpload from "express-fileupload";
+
 const app = express();
 
 // built-in middlewares
@@ -17,10 +20,17 @@ app.use(cors());
 app.use(cookieParser());
 app.use(morgan("dev"));
 
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/"
+  })
+);
+
 // user route api
-app.use("api/v1/user", userRoute);
-app.use("/api/v1/user", authRoute);
+app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/products", productRoute);
+app.use("/api/v1/user", userRoute);
 
 // health-check
 app.get("/ping", (_req, res) => {

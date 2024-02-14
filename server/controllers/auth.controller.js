@@ -1,11 +1,11 @@
-import asyncHandler from '../middlewares/asyncHandler.middleware.js';
-import User from '../models/user.model.js';
-import AppError from '../utils/appError.utils.js';
-import cloudinary from 'cloudinary';
-import sendEmail from '../utils/sendMail.utils.js';
-import crypto from 'crypto';
+import asyncHandler from "../middlewares/asyncHandler.middleware.js";
+import User from "../models/user.model.js";
+import AppError from "../utils/appError.utils.js";
+import cloudinary from "cloudinary";
+import sendEmail from "../utils/sendMail.utils.js";
+import crypto from "crypto";
 
-import fs from 'fs';
+import fs from "fs";
 
 /**
  *
@@ -17,9 +17,9 @@ import fs from 'fs';
  */
 
 const cookieOptions = {
-  secure: process.env.NODE_ENV === 'production' ? true : false,
+  secure: process.env.NODE_ENV === "production" ? true : false,
   maxAge: 7 * 24 * 60 * 60 * 1000, //  7 days
-  httpOnly: true,
+  httpOnly: true
 };
 
 export const registerUser = asyncHandler(async (req, res, next) => {
@@ -28,13 +28,13 @@ export const registerUser = asyncHandler(async (req, res, next) => {
 
   // check if the data is there or not, if not throw error message
   if (!firstName || !email || !password || !mobileNumber) {
-    return next(new AppError('All fields are required', 400));
+    return next(new AppError("All fields are required", 400));
   }
 
   // check if the user already exist
   const userExist = await User.findOne({ email });
   if (userExist) {
-    return next(new AppError('Email already exist', 409));
+    return next(new AppError("Email already exist", 409));
   }
 
   // create new user data object
@@ -45,13 +45,13 @@ export const registerUser = asyncHandler(async (req, res, next) => {
     mobileNumber,
     avatar: {
       public_id: 135,
-      secure_url: 'random_url',
-    },
+      secure_url: "random_url"
+    }
   });
   // If user not created send message response
   if (!user) {
     return next(
-      new AppError('User registration failed, please try again later', 400)
+      new AppError("User registration failed, please try again later", 400)
     );
   }
 
@@ -59,9 +59,9 @@ export const registerUser = asyncHandler(async (req, res, next) => {
   if (req.file) {
     try {
       const result = await cloudinary.v2.uploader.upload(req.file.path, {
-        folder: 'users-manage',
+        folder: "users-manage",
         width: 250,
-        height: 250,
+        height: 250
       });
 
       // If success
@@ -79,7 +79,7 @@ export const registerUser = asyncHandler(async (req, res, next) => {
       await user.save();
     } catch (error) {
       return next(
-        new AppError(error || 'File not uploaded, please try again', 400)
+        new AppError(error || "File not uploaded, please try again", 400)
       );
     }
   }
@@ -91,13 +91,13 @@ export const registerUser = asyncHandler(async (req, res, next) => {
   user.password = undefined;
 
   // Setting the token in the cookie with name token along with cookieOptions
-  res.cookie('token', token, cookieOptions);
+  res.cookie("token", token, cookieOptions);
 
   // If all good send the response to the frontend
   res.status(201).json({
     success: true,
-    message: 'User registered successfully',
-    user,
+    message: "User registered successfully",
+    user
   });
 });
 
@@ -113,16 +113,16 @@ export const loginUser = asyncHandler(async (req, res, next) => {
 
   // check if the user data is available
   if (!email || !password) {
-    return next(new AppError('Email and Password are required', 404));
+    return next(new AppError("Email and Password are required", 404));
   }
 
   // Finding the user data with the sent email
-  const user = await User.findOne({ email }).select('+password');
+  const user = await User.findOne({ email }).select("+password");
 
   // if no user or sent password do not match then send generic response
   if (!(user && (await user.comparePassword(password)))) {
     return next(
-      new AppError('Email or Password do not match or user does not exist', 401)
+      new AppError("Email or Password do not match or user does not exist", 401)
     );
   }
   // generate JWT token
@@ -132,13 +132,13 @@ export const loginUser = asyncHandler(async (req, res, next) => {
   user.password = undefined;
 
   // setting the token in the cookie with the name token along with the cookie option
-  res.cookie('token', token, cookieOptions);
+  res.cookie("token", token, cookieOptions);
 
   // if all good send the response to the frontend
   res.status(200).json({
     success: true,
-    message: 'User logged in successfully',
-    user,
+    message: "User logged in successfully",
+    user
   });
 });
 
@@ -151,15 +151,15 @@ export const loginUser = asyncHandler(async (req, res, next) => {
 
 export const userLogout = asyncHandler(async (req, res, next) => {
   // logout by clearing cookies
-  res.cookie('token', null, {
-    secure: process.env.NODE_ENV === 'production' ? true : false,
+  res.cookie("token", null, {
+    secure: process.env.NODE_ENV === "production" ? true : false,
     maxAge: 0,
-    httpOnly: true,
+    httpOnly: true
   });
 
   res.status(200).json({
     success: true,
-    message: 'User Logout successfully',
+    message: "User Logout successfully"
   });
 });
 
@@ -179,17 +179,17 @@ export const changePassword = asyncHandler(async (req, res, next) => {
   // check if the field are there or not
   if (!oldPassword || !newPassword) {
     return next(
-      new AppError('oldPassword and newPassword should be included', 400)
+      new AppError("oldPassword and newPassword should be included", 400)
     );
   }
 
   // find the user by ID and selecting the password
-  const user = await User.findById(id).select('+password');
+  const user = await User.findById(id).select("+password");
   let email = user.email;
 
   // check user is present
   if (!user) {
-    return next(new AppError('User not available with the provided ID', 400));
+    return next(new AppError("User not available with the provided ID", 400));
   }
 
   // check if the old password is correct
@@ -197,7 +197,7 @@ export const changePassword = asyncHandler(async (req, res, next) => {
 
   // throw if error if the old password is not valid
   if (!isValidPassword) {
-    return next(new AppError('Invalid Old password provided', 400));
+    return next(new AppError("Invalid Old password provided", 400));
   }
 
   // setting the new password
@@ -210,7 +210,7 @@ export const changePassword = asyncHandler(async (req, res, next) => {
   user.password = undefined;
 
   // sent the resetPasswordUrl to the user email
-  const subject = 'Password updated';
+  const subject = "Password updated";
   const message = `This is to confirm that your password has been updated successfully`;
 
   let mailUpdate = false;
@@ -227,8 +227,8 @@ export const changePassword = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: `Password change successfully with ${
-      mailUpdate ? 'with mail update' : 'with failed mail update'
-    }`,
+      mailUpdate ? "with mail update" : "with failed mail update"
+    }`
   });
 });
 
@@ -247,7 +247,7 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
 
   // if no email send email is required
   if (!email) {
-    return next(new AppError('Email is required', 400));
+    return next(new AppError("Email is required", 400));
   }
 
   // finding the user via email
@@ -255,7 +255,7 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
 
   // if no user email found send the message email not found
   if (!user) {
-    return next(new AppError('Email not registered', 400));
+    return next(new AppError("Email not registered", 400));
   }
 
   // generating reset token
@@ -271,11 +271,11 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
    * the rest is the route that we will create to verify if token is correct or not
    */
   const resetPasswordUrl = `${req.protocol}://${req.get(
-    'host'
+    "host"
   )}/api/v1/user/reset/${resetToken}`;
 
   // sent the resetPasswordUrl to the user email
-  const subject = 'Reset Password';
+  const subject = "Reset Password";
   const message = `
   <p>You can reset your password by clicking <a href=${resetPasswordUrl} target="_blank"> Reset your password</a>. If the above link does not work for some reason, then copy and paste this link in a new tab:</p>
 <p> ${resetPasswordUrl}</p>
@@ -289,7 +289,7 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
     // if email sent successfully send the success response
     res.status(200).json({
       success: true,
-      message: `Reset password token has been sent to ${email} successfully`,
+      message: `Reset password token has been sent to ${email} successfully`
     });
   } catch (error) {
     user.forgotPasswordToken = undefined;
@@ -298,7 +298,7 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
     await user.save();
 
     return next(
-      new AppError(error.message || 'Something went wrong, please try again'),
+      new AppError(error.message || "Something went wrong, please try again"),
       500
     );
   }
@@ -323,13 +323,13 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
   /* we are again hashing the resetToken  using sha256 since we have stored our resetToken in DB using the same algorithm */
 
   const forgotPasswordToken = crypto
-    .createHash('Sha256')
+    .createHash("Sha256")
     .update(resetToken)
-    .digest('hex');
+    .digest("hex");
 
   // check if password is not there then send response saying password is required.
   if (!password) {
-    return next(new AppError('Password is required', 400));
+    return next(new AppError("Password is required", 400));
   }
 
   // checking if token matches in DB and if it is still valid (not expired)
@@ -339,14 +339,14 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
       $gt: new Date(
         Date.now()
       ) /* $gt will help us check for greater than value, with this we can
-      check if token is valid or expired */,
-    },
+      check if token is valid or expired */
+    }
   });
 
   //if not found or expired send the response
   if (!user) {
     return next(
-      new AppError('Token is invalid or expired, please try again', 400)
+      new AppError("Token is invalid or expired, please try again", 400)
     );
   }
 
@@ -363,6 +363,6 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
   // Sending the response when everything goes good
   res.status(200).json({
     success: true,
-    message: 'Password changed successfully',
+    message: "Password changed successfully"
   });
 });

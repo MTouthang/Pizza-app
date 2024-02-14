@@ -11,7 +11,10 @@ import {
 } from "../controllers/user.controller.js";
 
 import upload from "../middlewares/multer.middleware.js";
+
 import { isLoggedIn, authorizeRoles } from "../middlewares/auth.middleware.js";
+
+import cloudinaryImageUpload from "../middlewares/cloudinaryImageUpload.js";
 
 const userRoute = express.Router();
 
@@ -27,19 +30,22 @@ userRoute.get(
 );
 
 userRoute.get(
-  "/get-user/:user-id",
+  "/user-detail/:id",
   isLoggedIn,
   authorizeRoles("ADMIN"),
   userDerails
 );
+
 userRoute.put(
-  "/update-user/:user-id",
+  "/update-user/:id",
   isLoggedIn,
   authorizeRoles("ADMIN"),
+  cloudinaryImageUpload,
   updateUser
 );
+
 userRoute.delete(
-  "/delete-user/:user-id",
+  "/delete-user/:id",
   isLoggedIn,
   authorizeRoles("ADMIN"),
   deleteUser

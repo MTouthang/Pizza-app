@@ -44,16 +44,14 @@ const userSchema = new Schema(
       select: false // Will not select password upon looking up a document
     },
 
-    avatar: {
-      public_id: {
-        type: String,
-        required: true
+    avatar: new Schema(
+      {
+        imageId: { type: String, required: true },
+        url: { type: String, required: true }
       },
-      secure_url: {
-        type: String,
-        required: true
-      }
-    },
+      { _id: false }
+    ),
+
     role: {
       type: String,
       enum: ["USER", "ADMIN"],

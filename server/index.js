@@ -1,7 +1,7 @@
-import app from './app.js';
-import dotenv from 'dotenv';
-import connectToDB from './config/config.db.js';
-import cloudinaryConfig from './config/config.cloudinary.js';
+import app from "./app.js";
+import dotenv from "dotenv";
+import connectToDB from "./config/config.db.js";
+import cloudinaryConfig from "./config/config.cloudinary.js";
 
 dotenv.config();
 cloudinaryConfig();
