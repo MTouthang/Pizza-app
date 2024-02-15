@@ -1,4 +1,4 @@
-import cloudinary from '../config/cloudinary.config.js';
+import cloudinary from "../config/cloudinary.config.js";
 
 function cloudinaryImageUpload(image) {
   return async (req, res, next) => {
@@ -13,7 +13,7 @@ function cloudinaryImageUpload(image) {
         );
         req.user[image] = {
           imageId: result.public_id,
-          url: result.secure_url,
+          url: result.secure_url
         };
       }
       return next();
