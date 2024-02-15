@@ -129,9 +129,10 @@ export const userLogout = asyncHandler(async (req, res, next) => {
 /**
  *
  * @ChangePassword
- * @ROUTE @POST {{URL}}/api/v1/user/change-password
+ * @desc change user account password
+ * @ROUTE @POST {{URL}}/api/v1/auth/change-password
  * @return message with password updated or changed
- * @ACCESS private
+ * @ACCESS private - logged-in user
  *
  */
 export const changePassword = asyncHandler(async (req, res, next) => {
@@ -198,9 +199,10 @@ export const changePassword = asyncHandler(async (req, res, next) => {
 /**
  *
  * @forgotPassword
- * @ROUTE @Post {{URL}}/api/v1/user/reset
+ * @desc forgot password incase user forget the password
+ * @ROUTE @Post {{URL}}/api/v1/auth/reset
  * @return sent mail to the user email and reset a password
- * @ACCESS public
+ * @ACCESS public - only user
  *
  */
 
@@ -270,11 +272,13 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
 /**
  *
  * @resetPassword
- * @ROUTE @POST {{URL}}/api/v1/user/reset/resetToken
+ * @desc allow the user to reset the password
+ * @ROUTE @POST {{URL}}/api/v1/auth/reset/:resetToken
  * @return sent mail to the user email and reset a password
- * @ACCESS private
+ * @ACCESS private - particular user
  *
  */
+// TODO: send mail once the user password is reset
 export const resetPassword = asyncHandler(async (req, res, next) => {
   // extracting resetToken from req.params object
   const { resetToken } = req.params;
