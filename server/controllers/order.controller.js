@@ -19,11 +19,7 @@ export const createOrder = asyncHandler(async (req, res, next) => {
   }
 
   // make sure the user have cart items
-  const cart = await Cart.findOne({ _id: cartId, user: userId }).populate([
-    {
-      path: 'items',
-    },
-  ]);
+  const cart = await Cart.findOne({ _id: cartId, user: userId });
   if (!cart) {
     return next(new AppError('Invalid cart ID provided ', 404));
   }
@@ -31,12 +27,13 @@ export const createOrder = asyncHandler(async (req, res, next) => {
   // Create a new order instance
   const order = new Order({
     user: userId,
-    productDetails: cart,
+    quantity: cart.quantity,
+    totalPrice: cart.totalPrice,
+    items: cart.items,
     paymentMethod,
     address,
   });
 
-  console.log('order', order);
   // Save the new order to the database
   const orderDetails = await order.save();
 
@@ -44,7 +41,7 @@ export const createOrder = asyncHandler(async (req, res, next) => {
     return next(new AppError('Not create the order', 500));
   }
 
-  // await Cart.findOneAndDelete({ _id: cartId, user: userId });
+  await Cart.findOneAndDelete({ _id: cartId, user: userId });
 
   res.status(201).json({
     success: true,
@@ -107,19 +104,15 @@ export const orderDetails = asyncHandler(async (req, res, next) => {
       ? { _id: orderId }
       : { _id: orderId, user: req.user.id };
 
-  // TODO: populate product details
   const order = await Order.findOne(query).populate([
     {
-      path: 'productDetails.items',
+      path: 'items',
     },
   ]);
-
   // Check if the order exists
   if (!order) {
     return next(new AppError('Order with the given ID is not available', 404));
   }
-
-  console.log(order);
 
   // Send success response with order details
   res.status(200).json({
