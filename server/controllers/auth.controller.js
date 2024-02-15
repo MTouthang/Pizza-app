@@ -5,21 +5,21 @@ import AppError from '../utils/appError.utils.js';
 import sendEmail from '../utils/sendMail.utils.js';
 import crypto from 'crypto';
 
-/**
- *
- * @REGISTRATION
- * @ROUTE @POST {{URL}}/api/v1/user/register
- * @return user's data
- * @ACCESS public
- *
- */
-
 const cookieOptions = {
   secure: process.env.NODE_ENV === 'production' ? true : false,
   maxAge: 7 * 24 * 60 * 60 * 1000, //  7 days
   httpOnly: true,
 };
 
+/**
+ *
+ * @REGISTRATION
+ * @des user account registration
+ * @ROUTE @POST {{URL}}/api/v1/auth/register
+ * @return user's data with success message
+ * @ACCESS public
+ *
+ */
 export const registerUser = asyncHandler(async (req, res, next) => {
   // extract data
   const { firstName, email, password, mobileNumber } = req.body;
@@ -64,7 +64,8 @@ export const registerUser = asyncHandler(async (req, res, next) => {
 
 /**
  * @userLogin
- * @ROUTE @POST {{URL}}/api/v1/user/login
+ * @desc User login with email and password
+ * @ROUTE @POST {{URL}}/api/v1/auth/login
  * @return access token and user logged in successfully message
  * @ACCESS public
  */
@@ -105,9 +106,10 @@ export const loginUser = asyncHandler(async (req, res, next) => {
 
 /**
  * @userLogout
- * @ROUTE @POST {{URL}}/api/v1/user/logout
+ * @desc logout the user
+ * @ROUTE @POST {{URL}}/api/v1/auth/logout
  * @return message with user logout successfully
- * @ACCESS private
+ * @ACCESS private - logged-in user
  */
 
 export const userLogout = asyncHandler(async (req, res, next) => {
