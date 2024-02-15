@@ -1,50 +1,59 @@
-import express from 'express';
+import express from "express";
 import {
   createProduct,
   productDetails,
   listProductsOnCategory,
   updateProduct,
   deleteProduct,
-} from '../controllers/product.controller.js';
-import { authorizeRoles, isLoggedIn } from '../middlewares/auth.middleware.js';
-import cloudinaryImageUpload from '../middlewares/cloudinaryImageUpload.js';
+  listAllProducts
+} from "../controllers/product.controller.js";
+import { authorizeRoles, isLoggedIn } from "../middlewares/auth.middleware.js";
+import cloudinaryImageUpload from "../middlewares/cloudinaryImageUpload.js";
 
 const productRoute = express.Router();
 
 productRoute.post(
-  '/',
+  "/",
   isLoggedIn,
-  authorizeRoles('ADMIN'),
-  cloudinaryImageUpload('productImage'),
+  authorizeRoles("ADMIN"),
+  cloudinaryImageUpload("productImage"),
   createProduct
 );
 
+// query limit, page , category (Pizza, Burgers, Drinks)
 productRoute.get(
-  '/id/:id',
+  "/list-all-product",
   isLoggedIn,
-  authorizeRoles('USER', 'ADMIN'),
+  authorizeRoles("USER", "ADMIN"),
+  listAllProducts
+);
+
+productRoute.get(
+  "/product-detail/:id",
+  isLoggedIn,
+  authorizeRoles("USER", "ADMIN"),
   productDetails
 );
 
 productRoute.get(
-  '/category/:category',
+  "/category/:category",
   isLoggedIn,
-  authorizeRoles('USER', 'ADMIN'),
+  authorizeRoles("USER", "ADMIN"),
   listProductsOnCategory
 );
 
 productRoute.put(
-  '/update-product/:id',
+  "/update-product/:id",
   isLoggedIn,
-  authorizeRoles('ADMIN'),
-  cloudinaryImageUpload,
+  authorizeRoles("ADMIN"),
+  cloudinaryImageUpload("productImage"),
   updateProduct
 );
 
 productRoute.delete(
-  '/update-product/:id',
+  "/delete-product/:id",
   isLoggedIn,
-  authorizeRoles('ADMIN'),
+  authorizeRoles("ADMIN"),
   deleteProduct
 );
 
