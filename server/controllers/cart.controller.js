@@ -12,7 +12,7 @@ import AppError from '../utils/appError.utils.js';
  *
  */
 
-// TODO: count for same product being added.
+// TODO: count for same product being added (need to make some changes in the schema)
 export const addToCart = asyncHandler(async (req, res, next) => {
   const { productId } = req.params;
 
