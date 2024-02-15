@@ -4,7 +4,8 @@ import {
   productDetails,
   listProductsOnCategory,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  listAllProducts
 } from "../controllers/product.controller.js";
 import { authorizeRoles, isLoggedIn } from "../middlewares/auth.middleware.js";
 import cloudinaryImageUpload from "../middlewares/cloudinaryImageUpload.js";
@@ -19,8 +20,16 @@ productRoute.post(
   createProduct
 );
 
+// query limit, page , category (Pizza, Burgers, Drinks)
 productRoute.get(
-  "/id/:id",
+  "/list-all-product",
+  isLoggedIn,
+  authorizeRoles("USER", "ADMIN"),
+  listAllProducts
+);
+
+productRoute.get(
+  "/product-detail/:id",
   isLoggedIn,
   authorizeRoles("USER", "ADMIN"),
   productDetails
@@ -37,12 +46,12 @@ productRoute.put(
   "/update-product/:id",
   isLoggedIn,
   authorizeRoles("ADMIN"),
-  cloudinaryImageUpload,
+  cloudinaryImageUpload("productImage"),
   updateProduct
 );
 
 productRoute.delete(
-  "/update-product/:id",
+  "/delete-product/:id",
   isLoggedIn,
   authorizeRoles("ADMIN"),
   deleteProduct
