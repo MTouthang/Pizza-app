@@ -8,7 +8,7 @@ import {
   userLogout,
 } from '../controllers/auth.controller.js';
 
-import { isLoggedIn } from '../middlewares/auth.middleware.js';
+import { authorizeRoles, isLoggedIn } from '../middlewares/auth.middleware.js';
 import cloudinaryImageUpload from '../middlewares/cloudinaryImageUpload.js';
 const authRoute = express.Router();
 
@@ -17,7 +17,12 @@ authRoute.post('/login', loginUser);
 authRoute.post('/logout', userLogout);
 
 // change password -
-authRoute.post('/change-password', isLoggedIn, changePassword);
+authRoute.post(
+  '/change-password',
+  isLoggedIn,
+  authorizeRoles('USER'),
+  changePassword
+);
 
 // forgot password
 authRoute.post('/reset', isLoggedIn, forgotPassword);
