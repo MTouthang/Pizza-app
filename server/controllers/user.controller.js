@@ -99,10 +99,11 @@ export const deleteProfile = asyncHandler(async (req, res, next) => {
 
 /**
  *
- * @list-all-user
- * @ROUTE @get {{URL}}/api/v1/list-all-user
+ * @listAllUser
+ * @desc list all the available user
+ * @ROUTE @GET {{URL}}/api/v1/list-all-user
  * @return users
- * @ACCESS admin
+ * @ACCESS Private only admin
  *
  */
 
