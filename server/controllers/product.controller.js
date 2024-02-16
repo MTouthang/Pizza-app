@@ -133,10 +133,11 @@ export const productDetails = asyncHandler(async (req, res, next) => {
 
 /**
  *
- * @productDetail
- * @ROUTE @get {{URL}}/api/v1/products/list-all-product/?page=1&limit=3&category=Pizza
- * @return product's data with success message
- * @ACCESS user, admin
+ * @listProductsOnCategory
+ * @desc list all the product base on category
+ * @ROUTE @GET {{URL}}/api/v1/products/category/:category
+ * @return product's data with success status and message
+ * @ACCESS public
  *
  */
 
