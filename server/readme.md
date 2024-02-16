@@ -8,7 +8,7 @@
 ![Express.js](https://img.shields.io/badge/Express%20js-000000?style=for-the-badge&logo=express&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
 
-This repository contains code and resources dedicated to the development and maintenance of the backend component of the lmsGenie application.
+This repository contains code and resources dedicated to the development and maintenance of the backend component of the Pizza application.
 
 </div>
 
