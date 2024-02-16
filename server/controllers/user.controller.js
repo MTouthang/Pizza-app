@@ -42,7 +42,7 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
   const user = await User.findById(userId);
   if (!user) {
     return next(
-      new AppError('Not able to fetch the logged-in user details', 401)
+      new AppError('Unable to fetch the logged-in user details', 401)
     );
   }
 
@@ -148,14 +148,15 @@ export const listAllUsers = asyncHandler(async (req, res, next) => {
 
 /**
  *
- * @get-user
+ * @userDetails
+ * @desc view particular user details
  * @ROUTE @get {{URL}}/api/v1/get-user/:id
- * @return users
- * @ACCESS admin
+ * @return users details
+ * @ACCESS private only admin
  *
  */
 
-export const userDerails = asyncHandler(async (req, res, next) => {
+export const userDetails = asyncHandler(async (req, res, next) => {
   const userId = req.params.id;
 
   const user = await User.findById(userId);
@@ -172,10 +173,11 @@ export const userDerails = asyncHandler(async (req, res, next) => {
 
 /**
  *
- * @update-user
- * @ROUTE @put {{URL}}/api/v1/update-user/:id
- * @return users
- * @ACCESS admin
+ * @updateUser
+ * @desc update user details
+ * @ROUTE PUT {{URL}}/api/v1/update-user/:id
+ * @return user's data along with success status and message
+ * @ACCESS Private only admin
  *
  */
 export const updateUser = asyncHandler(async (req, res, next) => {
@@ -188,13 +190,12 @@ export const updateUser = asyncHandler(async (req, res, next) => {
     );
   }
 
-  const update = {};
-  update.firstName = req.body.firstName || user.firstName;
-  update.lastName = req.body.lastName || user.lastName;
-  update.mobileNumber = req.body.mobileNumber || user.mobileNumber;
-  update.avatar = req.body.avatar || user.avatar;
-  update.role = req.body.role || user.role;
-  update.avatar = req.user.image || update.avatar;
+  const update = { ...req.body };
+  if (req.user.avatar) {
+    update.avatar = req.user.avatar;
+  }
+
+  console.log('update', update);
 
   const updatedUser = await User.findOneAndUpdate(
     { _id: req.user.id },
@@ -211,7 +212,8 @@ export const updateUser = asyncHandler(async (req, res, next) => {
 
 /**
  *
- * @delete-user
+ * @deleteUser
+ * @desc delete a particular user
  * @ROUTE @put {{URL}}/api/v1/delete-user/:id
  * @return users
  * @ACCESS admin ,

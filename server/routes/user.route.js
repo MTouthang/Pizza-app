@@ -4,10 +4,10 @@ import {
   updateProfile,
   deleteProfile,
   listAllUsers,
-  userDerails,
   updateUser,
   deleteUser,
   createUser,
+  userDetails,
 } from '../controllers/user.controller.js';
 
 import { isLoggedIn, authorizeRoles } from '../middlewares/auth.middleware.js';
@@ -37,7 +37,7 @@ userRoute.get(
   '/user-detail/:id',
   isLoggedIn,
   authorizeRoles('ADMIN'),
-  userDerails
+  userDetails
 );
 
 userRoute.put(
