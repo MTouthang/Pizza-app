@@ -30,12 +30,12 @@ export const viewProfile = asyncHandler(async (req, res, next) => {
 
 /**
  *
- * @update-PROFILE
+ * @updateProfile
+ * @desc Update user profile
  * @ROUTE @put {{URL}}/api/v1/profile
- * @return user's data
- * @ACCESS private
+ * @return user's data with success status and message
+ * @ACCESS private logged-in user
  */
-
 export const updateProfile = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
 
@@ -60,7 +60,7 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: 'User logged in successfully',
+    message: `User's data updated successfully`,
     updatedUser,
   });
 });
