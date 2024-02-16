@@ -6,13 +6,14 @@ import AppError from '../utils/appError.utils.js';
 /**
  *
  * @addToCart
+ * @desc Add product to cart using product id
  * @ROUTE @POST {{URL}}/api/v1/cart/product/:productId
- * @return Product cart successfully created message
- * @ACCESS private
+ * @return Product cart successfully created with success status and message
+ * @ACCESS private - logged-user
  *
  */
 
-// TODO: count for same product being added (need to make some changes in the schema)
+/* TODO: count for same product being added (need to make some changes in the schema) */
 export const addToCart = asyncHandler(async (req, res, next) => {
   const { productId } = req.params;
 
@@ -68,7 +69,7 @@ export const addToCart = asyncHandler(async (req, res, next) => {
  * @desc view product cart
  * @ROUTE @POST {{URL}}/api/v1/cart/:cartId
  * @return cart data
- * @ACCESS private
+ * @ACCESS private - logged-user
  *
  */
 export const viewCart = asyncHandler(async (req, res, next) => {
@@ -96,12 +97,13 @@ export const viewCart = asyncHandler(async (req, res, next) => {
 /**
  *
  * @clearCart
- * @desc clear product cart
+ * @desc clear user product cart
  * @ROUTE @POST {{URL}}/api/v1/cart/:cartId
  * @return cart successfully clear
- * @ACCESS private
+ * @ACCESS private logged-user
  *
  */
+// TODO: clear/remove single items from the cart
 export const clearCart = asyncHandler(async (req, res, next) => {
   const cart = await Cart.findOne({ user: req.user.id });
   if (!cart) {
@@ -116,7 +118,8 @@ export const clearCart = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: 'Cart successfully Clear and delete',
+    message: 'Cart successfully Clear ',
+    cart,
   });
 });
 
@@ -125,8 +128,8 @@ export const clearCart = asyncHandler(async (req, res, next) => {
  * @listAllCart
  * @desc list all the product carts of the users
  * @ROUTE @POST {{URL}}/api/v1/cart/lists
- * @return cart data
- * @ACCESS private
+ * @return all cart data along with success status and message
+ * @ACCESS private - only admin
  *
  */
 export const listAllCart = asyncHandler(async (req, res, next) => {
@@ -143,11 +146,10 @@ export const listAllCart = asyncHandler(async (req, res, next) => {
  * @deleteCart
  * @desc delete product cart of the user
  * @ROUTE @DELETE {{URL}}/api/v1/cart/:cartId
- * @return cart data
+ * @return deleted cart data along with success status and message
  * @ACCESS private - admin
  *
  */
-
 export const deleteCart = asyncHandler(async (req, res, next) => {
   const { cartId } = req.params;
   const cart = await Cart.findByIdAndDelete(cartId);
@@ -159,5 +161,6 @@ export const deleteCart = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     success: true,
     message: "User's product cart deleted successfully",
+    cart,
   });
 });

@@ -1,14 +1,15 @@
-import asyncHandler from "../middlewares/asyncHandler.middleware.js";
-import User from "../models/user.model.js";
-import AppError from "../utils/appError.utils.js";
-import sendEmail from "../utils/sendMail.utils.js";
+import asyncHandler from '../middlewares/asyncHandler.middleware.js';
+import User from '../models/user.model.js';
+import AppError from '../utils/appError.utils.js';
+import sendEmail from '../utils/sendMail.utils.js';
 
 /**
  *
- * @VIEW-PROFILE
- * @ROUTE @get {{URL}}/api/v1/profile
- * @return user's data
- * @ACCESS private
+ * @viewProfile
+ * @desc view user profile
+ * @ROUTE @GET {{URL}}/api/v1/profile
+ * @return user's data along success status and message
+ * @ACCESS private - logged-in user
  *
  */
 
@@ -17,31 +18,31 @@ export const viewProfile = asyncHandler(async (req, res, next) => {
   const user = await User.findById(userId);
   if (!user) {
     return next(
-      new AppError("Not able to fetch the logged-in user details", 401)
+      new AppError('Not able to fetch the logged-in user details', 401)
     );
   }
   res.status(200).json({
     success: true,
-    message: "User logged in successfully",
-    user
+    message: 'User profile fetch successfully',
+    user,
   });
 });
 
 /**
  *
- * @update-PROFILE
+ * @updateProfile
+ * @desc Update user profile
  * @ROUTE @put {{URL}}/api/v1/profile
- * @return user's data
- * @ACCESS private
+ * @return user's data with success status and message
+ * @ACCESS private logged-in user
  */
-
 export const updateProfile = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
 
   const user = await User.findById(userId);
   if (!user) {
     return next(
-      new AppError("Not able to fetch the logged-in user details", 401)
+      new AppError('Unable to fetch the logged-in user details', 401)
     );
   }
 
@@ -59,17 +60,18 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "User logged in successfully",
-    updatedUser
+    message: `User's data updated successfully`,
+    updatedUser,
   });
 });
 
 /**
  *
- * @delete-PROFILE
+ * @deleteProfile
+ * @desc delete user profile
  * @ROUTE @delete {{URL}}/api/v1/profile
- * @return user's data
- * @ACCESS private
+ * @return deleted user's data
+ * @ACCESS private - logged-user
  *
  */
 
@@ -78,29 +80,30 @@ export const deleteProfile = asyncHandler(async (req, res, next) => {
 
   const user = await User.findByIdAndDelete({ _id: userId });
   if (!user) {
-    return next(new AppError("Not able to delete user", 401));
+    return next(new AppError('Not able to delete user', 401));
   }
 
   // logout by clearing cookies
-  res.cookie("token", null, {
-    secure: process.env.NODE_ENV === "production" ? true : false,
+  res.cookie('token', null, {
+    secure: process.env.NODE_ENV === 'production' ? true : false,
     maxAge: 0,
-    httpOnly: true
+    httpOnly: true,
   });
 
   res.status(200).json({
     success: true,
-    message: "User delete in successfully",
-    user
+    message: 'User delete in successfully',
+    user,
   });
 });
 
 /**
  *
- * @list-all-user
- * @ROUTE @get {{URL}}/api/v1/list-all-user
+ * @listAllUser
+ * @desc list all the available user
+ * @ROUTE @GET {{URL}}/api/v1/list-all-user
  * @return users
- * @ACCESS admin
+ * @ACCESS Private only admin
  *
  */
 
@@ -118,14 +121,14 @@ export const listAllUsers = asyncHandler(async (req, res, next) => {
   if (endIndex < totalUsers) {
     result.next = {
       pageNumber: PAGE + 1,
-      limit: LIMIT
+      limit: LIMIT,
     };
   }
 
   if (startIndex > 0) {
     result.previous = {
       pageNumber: PAGE - 1,
-      limit: LIMIT
+      limit: LIMIT,
     };
   }
 
@@ -138,41 +141,43 @@ export const listAllUsers = asyncHandler(async (req, res, next) => {
     status: 200,
     success: true,
     message:
-      result.users.length > 0 ? "Fetch users successfully" : "No user found",
-    data: result
+      result.users.length > 0 ? 'Fetch users successfully' : 'No user found',
+    data: result,
   });
 });
 
 /**
  *
- * @get-user
+ * @userDetails
+ * @desc view particular user details
  * @ROUTE @get {{URL}}/api/v1/get-user/:id
- * @return users
- * @ACCESS admin
+ * @return users details
+ * @ACCESS private only admin
  *
  */
 
-export const userDerails = asyncHandler(async (req, res, next) => {
+export const userDetails = asyncHandler(async (req, res, next) => {
   const userId = req.params.id;
 
   const user = await User.findById(userId);
   if (!user) {
-    return next(new AppError("Not able to fetch the user details", 401));
+    return next(new AppError('Not able to fetch the user details', 401));
   }
 
   res.status(200).json({
     success: true,
-    message: "User logged in successfully",
-    user
+    message: 'User logged in successfully',
+    user,
   });
 });
 
 /**
  *
- * @update-user
- * @ROUTE @put {{URL}}/api/v1/update-user/:id
- * @return users
- * @ACCESS admin
+ * @updateUser
+ * @desc update user details
+ * @ROUTE PUT {{URL}}/api/v1/update-user/:id
+ * @return user's data along with success status and message
+ * @ACCESS Private only admin
  *
  */
 export const updateUser = asyncHandler(async (req, res, next) => {
@@ -181,17 +186,16 @@ export const updateUser = asyncHandler(async (req, res, next) => {
   const user = await User.findById(userId);
   if (!user) {
     return next(
-      new AppError("Not able to fetch the logged-in user details", 401)
+      new AppError('Not able to fetch the logged-in user details', 401)
     );
   }
 
-  const update = {};
-  update.firstName = req.body.firstName || user.firstName;
-  update.lastName = req.body.lastName || user.lastName;
-  update.mobileNumber = req.body.mobileNumber || user.mobileNumber;
-  update.avatar = req.body.avatar || user.avatar;
-  update.role = req.body.role || user.role;
-  update.avatar = req.user.image || update.avatar;
+  const update = { ...req.body };
+  if (req.user.avatar) {
+    update.avatar = req.user.avatar;
+  }
+
+  console.log('update', update);
 
   const updatedUser = await User.findOneAndUpdate(
     { _id: req.user.id },
@@ -201,36 +205,36 @@ export const updateUser = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "User logged in successfully",
-    updatedUser
+    message: 'User updated successfully',
+    updatedUser,
   });
 });
 
 /**
  *
- * @delete-user
- * @ROUTE @put {{URL}}/api/v1/delete-user/:id
- * @return users
- * @ACCESS admin ,
+ * @deleteUser
+ * @desc delete a particular user
+ * @ROUTE PUT {{URL}}/api/v1/delete-user/:id
+ * @return deleted user data
+ * @ACCESS private only admin
  *
  */
-
 export const deleteUser = asyncHandler(async (req, res, next) => {
   const userId = req.params.id;
 
   const deletedUser = await User.findById(userId);
 
   if (!deletedUser) {
-    return next(new AppError("Not able to delete user", 401));
+    return next(new AppError('Not able to delete user', 401));
   }
 
   // sent the resetPasswordUrl to the user email
-  const subject = "Delete Account";
+  const subject = 'Delete Account';
 
   let message = ``;
-  if (deletedUser.role === "ADMIN") {
+  if (deletedUser.role === 'ADMIN') {
     message = ` <p>Your account is removed by admin 👨‍💼</p>`;
-  } else if (deletedUser.role === "USER") {
+  } else if (deletedUser.role === 'USER') {
     message = ` <p>Your account is successfully deleted 🫡</p>`;
   }
   try {
@@ -239,30 +243,39 @@ export const deleteUser = asyncHandler(async (req, res, next) => {
     // if email sent successfully send the success response
     res.status(200).json({
       success: true,
-      message: "User deleted successfully",
-      deletedUser
+      message: 'User deleted successfully',
+      deletedUser,
     });
   } catch (error) {
     return next(
-      new AppError(error.message || "Something went wrong, please try again"),
+      new AppError(error.message || 'Something went wrong, please try again'),
       500
     );
   }
 });
 
+/**
+ *
+ * @createUser
+ * @desc create user with provided user details
+ * @ROUTE POST {{URL}}/api/v1/user/create-user/
+ * @return user data with success status and message
+ * @ACCESS private only admin
+ *
+ */
 export const createUser = asyncHandler(async (req, res, next) => {
   // extract data
   const { firstName, email, password, mobileNumber } = req.body;
 
   // check if the data is there or not, if not throw error message
   if (!firstName || !email || !password || !mobileNumber) {
-    return next(new AppError("All fields are required", 400));
+    return next(new AppError('All fields are required', 400));
   }
 
   // check if the user already exist
   const userExist = await User.findOne({ email });
   if (userExist) {
-    return next(new AppError("Email already exist", 409));
+    return next(new AppError('Email already exist', 409));
   }
 
   // create new user data object
@@ -271,14 +284,14 @@ export const createUser = asyncHandler(async (req, res, next) => {
     email,
     password,
     mobileNumber,
-    avatar: req.user.avatar
+    avatar: req.user.avatar,
   });
 
   // Setting the password to undefined so it does not get sent in the response
   user.password = undefined;
 
   // sent the resetPasswordUrl to the user email
-  const subject = "New Account";
+  const subject = 'New Account';
   const message = `
    <h1>successfully created account🥳 </h1> <p><br>  Name : ${firstName}   <br>  Email : ${email}  <br> password : ${password} </p>
    <b>Note: <i>recommend you to update your password 🧑‍💻</i></b>
@@ -291,12 +304,12 @@ export const createUser = asyncHandler(async (req, res, next) => {
     // if email sent successfully send the success response
     res.status(200).json({
       success: true,
-      message: "successfully created the account",
-      user
+      message: 'successfully created the account',
+      user,
     });
   } catch (error) {
     return next(
-      new AppError(error.message || "Something went wrong, please try again"),
+      new AppError(error.message || 'Something went wrong, please try again'),
       500
     );
   }

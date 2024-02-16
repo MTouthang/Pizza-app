@@ -5,8 +5,8 @@ import AppError from '../utils/appError.utils.js';
 /**
  * @createOrder
  * @desc    Create a new order
- * @route   POST /api/v1/orders/:cartId
- * @access  Private
+ * @route   POST /api/v1/orders/cart/:cartId
+ * @access  Private - logged-in user
  */
 export const createOrder = asyncHandler(async (req, res, next) => {
   const { paymentMethod, address } = req.body;
@@ -41,7 +41,9 @@ export const createOrder = asyncHandler(async (req, res, next) => {
     return next(new AppError('Not create the order', 500));
   }
 
-  await Cart.findOneAndDelete({ _id: cartId, user: userId });
+  // once order is created from the cart, clear the cart items
+  cart.items = [];
+  await cart.save();
 
   res.status(201).json({
     success: true,
@@ -76,7 +78,12 @@ export const listAllOrders = asyncHandler(async (req, res, next) => {
 export const deleteOrder = asyncHandler(async (req, res, next) => {
   const { orderId } = req.params;
 
-  const order = await Order.findByIdAndDelete(orderId);
+  let order = null;
+  if (req.user.role === 'ADMIN') {
+    order = await Order.findByIdAndDelete(orderId);
+  } else {
+    order = await Order.findOneAndDelete({ _id: orderId, user: req.user.id });
+  }
 
   if (!order) {
     return next(new AppError('Order with the given ID is not available', 404));
@@ -85,6 +92,7 @@ export const deleteOrder = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     success: true,
     message: 'Order deleted successfully',
+    order,
   });
 });
 
@@ -92,7 +100,7 @@ export const deleteOrder = asyncHandler(async (req, res, next) => {
  * @orderDetails
  * @desc    view the order details
  * @route   GET /api/v1/order/:orderId
- * @return  object with success true or false, message and order data
+ * @return  order data with success status and message
  * @access  Private - admin & user
  */
 export const orderDetails = asyncHandler(async (req, res, next) => {

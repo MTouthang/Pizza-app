@@ -19,6 +19,7 @@ orderRoute.post(
 
 // list all orders
 orderRoute.get('/', isLoggedIn, authorizeRoles('ADMIN'), listAllOrders);
+// view order details
 orderRoute.get(
   '/:orderId',
   isLoggedIn,
