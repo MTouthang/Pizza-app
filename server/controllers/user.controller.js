@@ -67,10 +67,11 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
 
 /**
  *
- * @delete-PROFILE
+ * @deleteProfile
+ * @desc delete user profile
  * @ROUTE @delete {{URL}}/api/v1/profile
- * @return user's data
- * @ACCESS private
+ * @return deleted user's data
+ * @ACCESS private - logged-user
  *
  */
 

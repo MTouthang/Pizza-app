@@ -16,7 +16,7 @@ import cloudinaryImageUpload from '../middlewares/cloudinaryImageUpload.js';
 
 const userRoute = express.Router();
 
-userRoute.get('/profile', isLoggedIn, viewProfile);
+userRoute.get('/profile', isLoggedIn, authorizeRoles('USER'), viewProfile);
 userRoute.put(
   '/profile',
   isLoggedIn,
@@ -24,7 +24,7 @@ userRoute.put(
   cloudinaryImageUpload('avatar'),
   updateProfile
 );
-userRoute.delete('/profile', isLoggedIn, deleteProfile);
+userRoute.delete('/profile', isLoggedIn, authorizeRoles('USER'), deleteProfile);
 
 userRoute.get(
   '/list-all-users',
