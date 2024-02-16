@@ -6,9 +6,10 @@ import AppError from '../utils/appError.utils.js';
 /**
  *
  * @addToCart
+ * @desc Add product to cart using product id
  * @ROUTE @POST {{URL}}/api/v1/cart/product/:productId
- * @return Product cart successfully created message
- * @ACCESS private
+ * @return Product cart successfully created with success status and message
+ * @ACCESS private - logged-user
  *
  */
 
@@ -68,7 +69,7 @@ export const addToCart = asyncHandler(async (req, res, next) => {
  * @desc view product cart
  * @ROUTE @POST {{URL}}/api/v1/cart/:cartId
  * @return cart data
- * @ACCESS private
+ * @ACCESS private - logged-user
  *
  */
 export const viewCart = asyncHandler(async (req, res, next) => {
@@ -96,12 +97,13 @@ export const viewCart = asyncHandler(async (req, res, next) => {
 /**
  *
  * @clearCart
- * @desc clear product cart
+ * @desc clear user product cart
  * @ROUTE @POST {{URL}}/api/v1/cart/:cartId
  * @return cart successfully clear
- * @ACCESS private
+ * @ACCESS private logged-user
  *
  */
+// TODO: clear/remove single at a time
 export const clearCart = asyncHandler(async (req, res, next) => {
   const cart = await Cart.findOne({ user: req.user.id });
   if (!cart) {
@@ -116,7 +118,8 @@ export const clearCart = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: 'Cart successfully Clear and delete',
+    message: 'Cart successfully Clear ',
+    cart,
   });
 });
 
