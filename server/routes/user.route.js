@@ -1,4 +1,4 @@
-import express from "express";
+import express from 'express';
 import {
   viewProfile,
   updateProfile,
@@ -7,57 +7,58 @@ import {
   userDerails,
   updateUser,
   deleteUser,
-  createUser
-} from "../controllers/user.controller.js";
+  createUser,
+} from '../controllers/user.controller.js';
 
-import { isLoggedIn, authorizeRoles } from "../middlewares/auth.middleware.js";
+import { isLoggedIn, authorizeRoles } from '../middlewares/auth.middleware.js';
 
-import cloudinaryImageUpload from "../middlewares/cloudinaryImageUpload.js";
+import cloudinaryImageUpload from '../middlewares/cloudinaryImageUpload.js';
 
 const userRoute = express.Router();
 
-userRoute.get("/profile", isLoggedIn, viewProfile);
+userRoute.get('/profile', isLoggedIn, viewProfile);
 userRoute.put(
-  "/profile",
+  '/profile',
   isLoggedIn,
-  cloudinaryImageUpload("avatar"),
+  authorizeRoles('USER'),
+  cloudinaryImageUpload('avatar'),
   updateProfile
 );
-userRoute.delete("/profile", isLoggedIn, deleteProfile);
+userRoute.delete('/profile', isLoggedIn, deleteProfile);
 
 userRoute.get(
-  "/list-all-users",
+  '/list-all-users',
   isLoggedIn,
-  authorizeRoles("ADMIN"),
+  authorizeRoles('ADMIN'),
   listAllUsers
 );
 
 userRoute.get(
-  "/user-detail/:id",
+  '/user-detail/:id',
   isLoggedIn,
-  authorizeRoles("ADMIN"),
+  authorizeRoles('ADMIN'),
   userDerails
 );
 
 userRoute.put(
-  "/update-user/:id",
+  '/update-user/:id',
   isLoggedIn,
-  authorizeRoles("ADMIN"),
-  cloudinaryImageUpload("avatar"),
+  authorizeRoles('ADMIN'),
+  cloudinaryImageUpload('avatar'),
   updateUser
 );
 
 userRoute.delete(
-  "/delete-user/:id",
+  '/delete-user/:id',
   isLoggedIn,
-  authorizeRoles("ADMIN", "USER"),
+  authorizeRoles('ADMIN', 'USER'),
   deleteUser
 );
 userRoute.post(
-  "/create-user",
+  '/create-user',
   isLoggedIn,
-  authorizeRoles("ADMIN"),
-  cloudinaryImageUpload("avatar"),
+  authorizeRoles('ADMIN'),
+  cloudinaryImageUpload('avatar'),
   createUser
 );
 
