@@ -13,7 +13,7 @@ import AppError from '../utils/appError.utils.js';
  *
  */
 
-// TODO: count for same product being added (need to make some changes in the schema)
+/* TODO: count for same product being added (need to make some changes in the schema) */
 export const addToCart = asyncHandler(async (req, res, next) => {
   const { productId } = req.params;
 
@@ -103,7 +103,7 @@ export const viewCart = asyncHandler(async (req, res, next) => {
  * @ACCESS private logged-user
  *
  */
-// TODO: clear/remove single at a time
+// TODO: clear/remove single items from the cart
 export const clearCart = asyncHandler(async (req, res, next) => {
   const cart = await Cart.findOne({ user: req.user.id });
   if (!cart) {
@@ -128,8 +128,8 @@ export const clearCart = asyncHandler(async (req, res, next) => {
  * @listAllCart
  * @desc list all the product carts of the users
  * @ROUTE @POST {{URL}}/api/v1/cart/lists
- * @return cart data
- * @ACCESS private
+ * @return all cart data along with success status and message
+ * @ACCESS private - only admin
  *
  */
 export const listAllCart = asyncHandler(async (req, res, next) => {
@@ -146,11 +146,10 @@ export const listAllCart = asyncHandler(async (req, res, next) => {
  * @deleteCart
  * @desc delete product cart of the user
  * @ROUTE @DELETE {{URL}}/api/v1/cart/:cartId
- * @return cart data
+ * @return deleted cart data along with success status and message
  * @ACCESS private - admin
  *
  */
-
 export const deleteCart = asyncHandler(async (req, res, next) => {
   const { cartId } = req.params;
   const cart = await Cart.findByIdAndDelete(cartId);
@@ -162,5 +161,6 @@ export const deleteCart = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     success: true,
     message: "User's product cart deleted successfully",
+    cart,
   });
 });

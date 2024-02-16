@@ -9,7 +9,7 @@ import AppError from '../utils/appError.utils.js';
  * @desc create Product
  * @ROUTE @POST {{URL}}/api/v1/products/
  * @return product's data with success message
- * @ACCESS private - admin
+ * @ACCESS private - only admin
  *
  */
 export const createProduct = asyncHandler(async (req, res, next) => {
@@ -189,12 +189,12 @@ export const listProductsOnCategory = asyncHandler(async (req, res, next) => {
 /**
  *
  * @UpdateProduct
+ * @desc Update product details
  * @ROUTE @put {{URL}}/api/v1/products/update-product/:id
  *  @return updated product's data with success message
- * @ACCESS admin
+ * @ACCESS Private only admin
  *
  */
-
 export const updateProduct = asyncHandler(async (req, res, next) => {
   const productId = req.params.id;
 
@@ -207,7 +207,6 @@ export const updateProduct = asyncHandler(async (req, res, next) => {
   update.productName = req.body.productName || product.productName;
   update.description = req.body.description || product.description;
   update.price = req.body.price || product.price;
-  update.rating = req.body.rating || product.rating;
   update.category = req.body.category || product.category;
   update.quantity = req.body.quantity || product.quantity;
   update.inStock = req.body.inStock || product.inStock;
@@ -235,9 +234,10 @@ export const updateProduct = asyncHandler(async (req, res, next) => {
 /**
  *
  * @DeleteProduct
- * @ROUTE @delete {{URL}}/api/v1/products/delete-product/:id
- *  @return product's data with success message
- * @ACCESS admin
+ * @desc delete product
+ * @ROUTE DELETE {{URL}}/api/v1/products/delete-product/:id
+ * @return delete product's data with success status and message
+ * @ACCESS private only admin
  *
  */
 export const deleteProduct = asyncHandler(async (req, res, next) => {

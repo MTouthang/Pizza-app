@@ -78,7 +78,12 @@ export const listAllOrders = asyncHandler(async (req, res, next) => {
 export const deleteOrder = asyncHandler(async (req, res, next) => {
   const { orderId } = req.params;
 
-  const order = await Order.findByIdAndDelete(orderId);
+  let order = null;
+  if (req.user.role === 'ADMIN') {
+    order = await Order.findByIdAndDelete(orderId);
+  } else {
+    order = await Order.findOneAndDelete({ _id: orderId, user: req.user.id });
+  }
 
   if (!order) {
     return next(new AppError('Order with the given ID is not available', 404));

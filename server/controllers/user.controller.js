@@ -205,7 +205,7 @@ export const updateUser = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: 'User logged in successfully',
+    message: 'User updated successfully',
     updatedUser,
   });
 });
@@ -219,7 +219,6 @@ export const updateUser = asyncHandler(async (req, res, next) => {
  * @ACCESS private only admin
  *
  */
-
 export const deleteUser = asyncHandler(async (req, res, next) => {
   const userId = req.params.id;
 
@@ -255,6 +254,15 @@ export const deleteUser = asyncHandler(async (req, res, next) => {
   }
 });
 
+/**
+ *
+ * @createUser
+ * @desc create user with provided user details
+ * @ROUTE POST {{URL}}/api/v1/user/create-user/
+ * @return user data with success status and message
+ * @ACCESS private only admin
+ *
+ */
 export const createUser = asyncHandler(async (req, res, next) => {
   // extract data
   const { firstName, email, password, mobileNumber } = req.body;
