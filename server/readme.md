@@ -39,3 +39,19 @@ check out the database design
 
 <!-- https://app.eraser.io/workspace/Ok1K1dDBN81DcOQ72KiQ?origin=share -->
 <a href="https://app.eraser.io/workspace/Ok1K1dDBN81DcOQ72KiQ?elements=ZIAH7t8FmFRIq64_H-MC6A">View on Eraser<br /><img src="https://app.eraser.io/workspace/Ok1K1dDBN81DcOQ72KiQ/preview?elements=ZIAH7t8FmFRIq64_H-MC6A&type=embed" /></a>
+
+## Project Structure
+
+Code files
+- `controllers/`: Defined controller functions.
+- `models/`: Defined Schemes and Models.
+- `routes/`: Defined API routes.
+- `middlewares/`: Defined middleware functions.
+- `config`: Defined API-related configs here (eg. DB configs).
+- `utils/`: Reusable utility function/constants.
+
+## Future possible work
+- `payment`: integrate online payment gateway
+- `slug`: integrate with slug for SEO friendly
+- `test`: integrate with unit testing
+- `docker`: containerize the service
