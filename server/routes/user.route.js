@@ -51,7 +51,7 @@ userRoute.put(
 userRoute.delete(
   '/delete-user/:id',
   isLoggedIn,
-  authorizeRoles('ADMIN', 'USER'),
+  authorizeRoles('ADMIN'),
   deleteUser
 );
 userRoute.post(

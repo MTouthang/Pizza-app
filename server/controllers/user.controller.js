@@ -214,9 +214,9 @@ export const updateUser = asyncHandler(async (req, res, next) => {
  *
  * @deleteUser
  * @desc delete a particular user
- * @ROUTE @put {{URL}}/api/v1/delete-user/:id
- * @return users
- * @ACCESS admin ,
+ * @ROUTE PUT {{URL}}/api/v1/delete-user/:id
+ * @return deleted user data
+ * @ACCESS private only admin
  *
  */
 
