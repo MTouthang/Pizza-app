@@ -1,14 +1,15 @@
-import { query } from "express";
-import asyncHandler from "../middlewares/asyncHandler.middleware.js";
-import Product from "../models/product.model.js";
-import AppError from "../utils/appError.utils.js";
+import { query } from 'express';
+import asyncHandler from '../middlewares/asyncHandler.middleware.js';
+import Product from '../models/product.model.js';
+import AppError from '../utils/appError.utils.js';
 
 /**
  *
  * @createProduct
+ * @desc create Product
  * @ROUTE @POST {{URL}}/api/v1/products/
  * @return product's data with success message
- * @ACCESS private
+ * @ACCESS private - admin
  *
  */
 export const createProduct = asyncHandler(async (req, res, next) => {
@@ -25,7 +26,7 @@ export const createProduct = asyncHandler(async (req, res, next) => {
     !quantity ||
     !inStock
   ) {
-    return next(new AppError("All fields are required", 400));
+    return next(new AppError('All fields are required', 400));
   }
 
   // create new product data object
@@ -36,30 +37,31 @@ export const createProduct = asyncHandler(async (req, res, next) => {
     category,
     quantity,
     inStock,
-    productImage: req.user.productImage
+    productImage: req.user.productImage,
   });
 
   // If product not created send message response
   const product = await productInfo.save();
 
   if (!product) {
-    return next(new AppError("Fail to create product", 400));
+    return next(new AppError('Fail to create product', 400));
   }
 
   // If all good send the response to the frontend
   res.status(201).json({
     success: true,
-    message: "Product added successfully",
-    product
+    message: 'Product added successfully',
+    product,
   });
 });
 
 /**
  *
- * @getallproducts
- * @ROUTE @get {{URL}}/api/v1/products/list-all-product/?page=1&limit=3&category=Pizza
- * @return product's data with success message
- * @ACCESS user, admin
+ * @listAllProducts
+ * @desc list all products will pagination and category
+ * @route @GET {{URL}}/api/v1/products/list-all-product/?page=1&limit=3&category=veg
+ * @return product's data with success status and message
+ * @ACCESS public user and admin
  *
  */
 export const listAllProducts = asyncHandler(async (req, res, next) => {
@@ -78,14 +80,14 @@ export const listAllProducts = asyncHandler(async (req, res, next) => {
   if (endIndex < totalUsers) {
     result.next = {
       pageNumber: PAGE + 1,
-      limit: LIMIT
+      limit: LIMIT,
     };
   }
 
   if (startIndex > 0) {
     result.previous = {
       pageNumber: PAGE - 1,
-      limit: LIMIT
+      limit: LIMIT,
     };
   }
 
@@ -99,18 +101,19 @@ export const listAllProducts = asyncHandler(async (req, res, next) => {
     success: true,
     message:
       result.products.length > 0
-        ? "Fetch products successfully"
-        : "No product found",
-    data: result
+        ? 'Fetch products successfully'
+        : 'No product found',
+    data: result,
   });
 });
 
 /**
  *
  * @productDetail
- * @ROUTE @get {{URL}}/api/v1/products/list-all-product/?page=1&limit=3&category=Pizza
- * @return product's data with success message
- * @ACCESS user, admin
+ * @desc particular product details
+ * @ROUTE @GET {{URL}}/api/v1/products/product-detail/:id
+ * @return product's data with success status and message
+ * @ACCESS public
  *
  */
 export const productDetails = asyncHandler(async (req, res, next) => {
@@ -118,13 +121,13 @@ export const productDetails = asyncHandler(async (req, res, next) => {
 
   const product = await Product.findById(productId);
   if (!product) {
-    next(new AppError("not able to find the product"));
+    next(new AppError('not able to find the product'));
   }
 
   res.status(200).json({
     success: true,
-    message: "successful",
-    product
+    message: 'successful',
+    product,
   });
 });
 
@@ -148,21 +151,21 @@ export const listProductsOnCategory = asyncHandler(async (req, res, next) => {
   const endIndex = PAGE * LIMIT;
 
   const totalUsers = await Product.find({
-    category: category
+    category: category,
   }).countDocuments();
 
   const result = {};
   if (endIndex < totalUsers) {
     result.next = {
       pageNumber: PAGE + 1,
-      limit: LIMIT
+      limit: LIMIT,
     };
   }
 
   if (startIndex > 0) {
     result.previous = {
       pageNumber: PAGE - 1,
-      limit: LIMIT
+      limit: LIMIT,
     };
   }
 
@@ -176,9 +179,9 @@ export const listProductsOnCategory = asyncHandler(async (req, res, next) => {
     success: true,
     message:
       result.users.length > 0
-        ? "Fetch products successfully"
-        : "No product found",
-    data: result
+        ? 'Fetch products successfully'
+        : 'No product found',
+    data: result,
   });
 });
 
@@ -196,7 +199,7 @@ export const updateProduct = asyncHandler(async (req, res, next) => {
 
   const product = await Product.findById(productId);
   if (!product) {
-    return next(new AppError("not able to find product", 400));
+    return next(new AppError('not able to find product', 400));
   }
 
   const update = {};
@@ -217,14 +220,14 @@ export const updateProduct = asyncHandler(async (req, res, next) => {
     { _id: product.id },
     update,
     {
-      new: true
+      new: true,
     }
   );
 
   res.status(200).json({
     success: true,
-    message: "successfully updated the product",
-    updatedProduct
+    message: 'successfully updated the product',
+    updatedProduct,
   });
 });
 
@@ -242,12 +245,12 @@ export const deleteProduct = asyncHandler(async (req, res, next) => {
   const deletedProduct = await Product.findByIdAndDelete(productId);
 
   if (!deletedProduct) {
-    return next(new AppError("not able to delete the product ", 400));
+    return next(new AppError('not able to delete the product ', 400));
   }
 
   res.status(200).json({
     success: true,
-    message: "successfully deleted the product",
-    deletedProduct
+    message: 'successfully deleted the product',
+    deletedProduct,
   });
 });
