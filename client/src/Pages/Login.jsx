@@ -34,9 +34,9 @@ const Login = () => {
     const res = await dispatch(login(loginData));
 
     if (res?.payload?.success) {
+      window.location.reload();
       navigate('/');
     }
-    window.location.reload();
   };
   return (
     <>
