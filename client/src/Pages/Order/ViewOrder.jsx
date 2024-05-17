@@ -15,7 +15,7 @@ const ViewOrder = () => {
     (async () => {
       const res = await dispatch(loggedInUserOrder()); // Dispatch action to fetch product details
       if (res.payload) {
-        setOrders(response.payload);
+        setOrders(res.payload);
       }
     })();
   }, [dispatch]);
