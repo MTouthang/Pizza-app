@@ -25,8 +25,8 @@ export const Layout = ({ children }) => {
     // redirect to home once logout
 
     if (res?.payload?.success) {
-      window.location.reload();
       navigate('/');
+      window.location.reload();
     }
   };
 
