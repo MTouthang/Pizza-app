@@ -36,6 +36,7 @@ const Login = () => {
     if (res?.payload?.success) {
       navigate('/');
     }
+    window.location.reload();
     // Clear login inputs
     setLoginData({
       email: '',

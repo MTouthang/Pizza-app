@@ -26,7 +26,6 @@ export const Layout = ({ children }) => {
 
     if (res?.payload?.success) {
       navigate('/');
-      window.location.reload();
     }
   };
 
@@ -54,22 +53,19 @@ export const Layout = ({ children }) => {
             <ul className="flex gap-4">
               <li className="hover:text-[#FF9110]">
                 {' '}
-                <Link to="#" onClick={() => scrollToSection('menu-section')}>
+                <Link onClick={() => scrollToSection('menu-section')}>
                   {' '}
                   Menu{' '}
                 </Link>{' '}
               </li>
               <li className="hover:text-[#FF9110]">
-                <Link
-                  to="#"
-                  onClick={() => scrollToSection('services-section')}
-                >
+                <Link to="" onClick={() => scrollToSection('services-section')}>
                   {' '}
                   Services{' '}
                 </Link>
               </li>
               <li className="hover:text-[#FF9110]">
-                <Link to="#" onClick={() => scrollToSection('about-section')}>
+                <Link onClick={() => scrollToSection('about-section')}>
                   {' '}
                   About{' '}
                 </Link>

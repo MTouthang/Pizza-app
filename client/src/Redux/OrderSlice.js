@@ -63,10 +63,11 @@ export const loggedInUserOrder = createAsyncThunk(
       });
 
       const response = await res;
-
+      console.log(response.data.order);
       return response?.data?.order;
     } catch (error) {
-      toast.info('Card empty');
+      console.log(error);
+      toast.info('Order empty');
     }
   }
 );

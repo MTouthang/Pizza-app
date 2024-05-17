@@ -34,6 +34,7 @@ const ViewOrder = () => {
       }
     }
   };
+  console.log(orders);
 
   return (
     <Layout>
