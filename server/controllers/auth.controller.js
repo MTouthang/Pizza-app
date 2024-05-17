@@ -8,7 +8,7 @@ import crypto from "crypto";
 const cookieOptions = {
   secure: process.env.NODE_ENV === "production" ? true : false,
   maxAge: 7 * 24 * 60 * 60 * 1000, //  7 days
-  httpOnly: true
+  httpOnly: true,
 };
 
 /**
@@ -35,14 +35,13 @@ export const registerUser = asyncHandler(async (req, res, next) => {
     return next(new AppError("Email already exist", 409));
   }
 
-  console.log("user", req.user);
   // create new user data object
   const user = await User.create({
     firstName,
     email,
     password,
     mobileNumber,
-    avatar: req.user?.avatar
+    avatar: req.user?.avatar,
   });
 
   // Generating a JWT token
@@ -58,7 +57,7 @@ export const registerUser = asyncHandler(async (req, res, next) => {
   res.status(201).json({
     success: true,
     message: "User registered successfully",
-    user
+    user,
   });
 });
 
@@ -100,7 +99,7 @@ export const loginUser = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "User logged in successfully",
-    user
+    user,
   });
 });
 
@@ -117,12 +116,12 @@ export const userLogout = asyncHandler(async (req, res, next) => {
   res.cookie("token", null, {
     secure: process.env.NODE_ENV === "production" ? true : false,
     maxAge: 0,
-    httpOnly: true
+    httpOnly: true,
   });
 
   res.status(200).json({
     success: true,
-    message: "User Logout successfully"
+    message: "User Logout successfully",
   });
 });
 
@@ -192,7 +191,7 @@ export const changePassword = asyncHandler(async (req, res, next) => {
     success: true,
     message: `Password change successfully with ${
       mailUpdate ? "with mail update" : "with failed mail update"
-    }`
+    }`,
   });
 });
 
@@ -254,7 +253,7 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
     // if email sent successfully send the success response
     res.status(200).json({
       success: true,
-      message: `Reset password token has been sent to ${email} successfully`
+      message: `Reset password token has been sent to ${email} successfully`,
     });
   } catch (error) {
     user.forgotPasswordToken = undefined;
@@ -306,8 +305,8 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
       $gt: new Date(
         Date.now()
       ) /* $gt will help us check for greater than value, with this we can
-      check if token is valid or expired */
-    }
+      check if token is valid or expired */,
+    },
   });
 
   //if not found or expired send the response
@@ -332,12 +331,12 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
   try {
     // saving the updated user value
     await user.save();
-    await sendEmail(deletedUser.email, subject, message);
+    await sendEmail(user.email, subject, message);
 
     // Sending the response when everything goes good
     res.status(200).json({
       success: true,
-      message: "Password changed successfully"
+      message: "Password changed successfully",
     });
   } catch (error) {
     return next(

@@ -1,40 +1,47 @@
-import express from 'express';
-import { authorizeRoles, isLoggedIn } from '../middlewares/auth.middleware.js';
+import express from "express";
+import { authorizeRoles, isLoggedIn } from "../middlewares/auth.middleware.js";
 import {
   createOrder,
   deleteOrder,
+  getUserOrders,
   listAllOrders,
   orderDetails,
   updateOrder,
-} from '../controllers/order.controller.js';
+} from "../controllers/order.controller.js";
 const orderRoute = express.Router();
 
 // create order
 orderRoute.post(
-  '/cart/:cartId',
+  "/cart/:cartId",
   isLoggedIn,
-  authorizeRoles('USER'),
+  authorizeRoles("USER"),
   createOrder
 );
 
 // list all orders
-orderRoute.get('/', isLoggedIn, authorizeRoles('ADMIN'), listAllOrders);
+orderRoute.get("/all", isLoggedIn, authorizeRoles("ADMIN"), listAllOrders);
 // view order details
 orderRoute.get(
-  '/:orderId',
+  "/:orderId",
   isLoggedIn,
-  authorizeRoles('USER', 'ADMIN'),
+  authorizeRoles("USER", "ADMIN"),
   orderDetails
 );
 
 orderRoute.delete(
-  '/:orderId',
+  "/:orderId",
   isLoggedIn,
-  authorizeRoles('USER', 'ADMIN'),
+  authorizeRoles("USER", "ADMIN"),
   deleteOrder
 );
 
 // update order only admin
-orderRoute.put('/:orderId', isLoggedIn, authorizeRoles('ADMIN'), updateOrder);
+orderRoute.put(
+  "/:orderId",
+  isLoggedIn,
+  authorizeRoles("USER", "ADMIN"),
+  updateOrder
+);
+orderRoute.get("/", isLoggedIn, authorizeRoles("USER"), getUserOrders);
 
 export default orderRoute;

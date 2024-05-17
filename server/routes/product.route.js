@@ -23,14 +23,13 @@ productRoute.post(
 // query limit, page , category (veg, non-veg, drink)
 productRoute.get(
   '/list-all-product',
-  isLoggedIn,
-  authorizeRoles('USER', 'ADMIN'),
+  
   listAllProducts
 );
 
-productRoute.get('/product-detail/:id', isLoggedIn, productDetails);
+productRoute.get('/product-detail/:id', productDetails);
 
-productRoute.get('/category/:category', isLoggedIn, listProductsOnCategory);
+productRoute.get('/category/:category', listProductsOnCategory);
 
 productRoute.put(
   '/update-product/:id',

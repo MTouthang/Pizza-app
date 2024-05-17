@@ -19,20 +19,29 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // third party middlewares
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://pizza-app-alpha-pink.vercel.app",
+    ],
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(cookieParser());
 app.use(morgan("dev"));
 
 app.use(
   fileUpload({
     useTempFiles: true,
-    tempFileDir: "/tmp/"
+    tempFileDir: "/tmp/",
   })
 );
 
 // user route api
 app.use("/api/v1/auth", authRoute);
-app.use("/api/v1/products", productRoute);
+app.use("/api/v1/product", productRoute);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/cart", cartRoute);
 app.use("/api/v1/order", orderRoute);

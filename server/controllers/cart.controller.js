@@ -1,7 +1,7 @@
-import Cart from '../models/cart.model.js';
-import asyncHandler from '../middlewares/asyncHandler.middleware.js';
-import Product from '../models/product.model.js';
-import AppError from '../utils/appError.utils.js';
+import Cart from "../models/cart.model.js";
+import asyncHandler from "../middlewares/asyncHandler.middleware.js";
+import Product from "../models/product.model.js";
+import AppError from "../utils/appError.utils.js";
 
 /**
  *
@@ -20,13 +20,13 @@ export const addToCart = asyncHandler(async (req, res, next) => {
   // Find the product by productId
   const product = await Product.findById(productId);
   if (!product) {
-    return next(new AppError('Product not found', 404));
+    return next(new AppError("Product not found", 404));
   }
 
   // Check if the product quantity is greater than 0
   if (product.quantity <= 0) {
     product.inStock = false;
-    return next(new AppError('Product out of stock', 400));
+    return next(new AppError("Product out of stock", 400));
   }
 
   // Check if the user already has a cart
@@ -58,7 +58,7 @@ export const addToCart = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: 'Product added to cart successfully',
+    message: "Product added to cart successfully",
     cart,
   });
 });
@@ -73,18 +73,39 @@ export const addToCart = asyncHandler(async (req, res, next) => {
  *
  */
 export const viewCart = asyncHandler(async (req, res, next) => {
-  const { cartId } = req.params;
-
-  // Determine query based on user role
-  const query =
-    req.user.role === 'ADMIN' ? { _id: cartId } : { user: req.user.id };
-
   // Find the cart
-  const cart = await Cart.findOne(query);
+  const cart = await Cart.findOne({ user: req.user.id }).populate("items");
 
   // Check if the cart exists
   if (!cart) {
-    return next(new AppError('Cart not available with the given cart ID', 404));
+    return next(new AppError("Cart not available with the given cart ID", 404));
+  }
+
+  // Send response
+  res.status(200).json({
+    success: true,
+    cart,
+  });
+});
+
+/**
+ *
+ * @viewCartById
+ * @desc view any product cart by its id
+ * @ROUTE @POST {{URL}}/api/v1/cart/:cartId
+ * @return cart data
+ * @ACCESS private - admin only
+ *
+ */
+export const viewCartById = asyncHandler(async (req, res, next) => {
+  const { cartId } = req.params;
+
+  // Find the cart
+  const cart = await Cart.findById(cartId);
+
+  // Check if the cart exists
+  if (!cart) {
+    return next(new AppError("Cart not available with the given cart ID", 404));
   }
 
   // Send response
@@ -107,7 +128,7 @@ export const viewCart = asyncHandler(async (req, res, next) => {
 export const clearCart = asyncHandler(async (req, res, next) => {
   const cart = await Cart.findOne({ user: req.user.id });
   if (!cart) {
-    return next(new AppError('Cart not available', 404));
+    return next(new AppError("Cart not available", 404));
   }
 
   // clearing the items
@@ -118,7 +139,7 @@ export const clearCart = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: 'Cart successfully Clear ',
+    message: "Cart successfully Clear ",
     cart,
   });
 });
@@ -136,7 +157,7 @@ export const listAllCart = asyncHandler(async (req, res, next) => {
   const carts = await Cart.find({});
   res.status(200).json({
     success: true,
-    message: carts ? 'carts fetch successfully' : 'No cart available',
+    message: carts ? "carts fetch successfully" : "No cart available",
     carts,
   });
 });
@@ -155,12 +176,68 @@ export const deleteCart = asyncHandler(async (req, res, next) => {
   const cart = await Cart.findByIdAndDelete(cartId);
 
   if (!cart) {
-    return next(new AppError('cart not available', 404));
+    return next(new AppError("cart not available", 404));
   }
 
   return res.status(200).json({
     success: true,
     message: "User's product cart deleted successfully",
     cart,
+  });
+});
+
+/**
+ * updateCart
+ * @desc remove the product items of the cart
+ * @ROUTE @UPDATE {{URL}}/api/v1/car/:itemId
+ * @return update cart items
+ * @ACCESS private - user and admin
+ */
+export const removeItemFromCart = asyncHandler(async (req, res, next) => {
+  // getting the product item id
+  const { itemId } = req.params;
+  console.log(itemId);
+
+  // find the cart document for the logged-in user
+  const cart = await Cart.findOne({ user: req.user.id }).populate("items");
+
+  if (!cart) {
+    return next(new AppError("Cart not available", 404));
+  }
+
+  // check if item exist in the items array
+  let itemIndex = -1;
+  const items = cart.items;
+  let itemInCart = false;
+  itemInCart = items.some((item, index) => {
+    if (item._id == itemId) {
+      itemIndex = index;
+      return true;
+    }
+    return false;
+  });
+
+  // if items not available return false
+  if (!itemInCart) {
+    return next(new AppError("Items not available in cart", 404));
+  }
+
+  // get item price
+  const itemPrice = cart.items[itemIndex].price;
+
+  // remove item
+  cart.items.splice(itemIndex, 1);
+
+  // update the total price and quantity
+  cart.quantity--;
+  cart.totalPrice -= itemPrice;
+
+  // save the updated cart document back to the database
+  const updatedCart = await cart.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Item successfully removed from cart",
+    cart: updatedCart,
   });
 });

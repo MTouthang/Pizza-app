@@ -1,7 +1,7 @@
-import asyncHandler from '../middlewares/asyncHandler.middleware.js';
-import User from '../models/user.model.js';
-import AppError from '../utils/appError.utils.js';
-import sendEmail from '../utils/sendMail.utils.js';
+import asyncHandler from "../middlewares/asyncHandler.middleware.js";
+import User from "../models/user.model.js";
+import AppError from "../utils/appError.utils.js";
+import sendEmail from "../utils/sendMail.utils.js";
 
 /**
  *
@@ -18,12 +18,12 @@ export const viewProfile = asyncHandler(async (req, res, next) => {
   const user = await User.findById(userId);
   if (!user) {
     return next(
-      new AppError('Not able to fetch the logged-in user details', 401)
+      new AppError("Not able to fetch the logged-in user details", 401)
     );
   }
   res.status(200).json({
     success: true,
-    message: 'User profile fetch successfully',
+    message: "User profile fetch successfully",
     user,
   });
 });
@@ -42,7 +42,7 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
   const user = await User.findById(userId);
   if (!user) {
     return next(
-      new AppError('Unable to fetch the logged-in user details', 401)
+      new AppError("Unable to fetch the logged-in user details", 401)
     );
   }
 
@@ -80,19 +80,19 @@ export const deleteProfile = asyncHandler(async (req, res, next) => {
 
   const user = await User.findByIdAndDelete({ _id: userId });
   if (!user) {
-    return next(new AppError('Not able to delete user', 401));
+    return next(new AppError("Not able to delete user", 401));
   }
 
   // logout by clearing cookies
-  res.cookie('token', null, {
-    secure: process.env.NODE_ENV === 'production' ? true : false,
+  res.cookie("token", null, {
+    secure: process.env.NODE_ENV === "production" ? true : false,
     maxAge: 0,
     httpOnly: true,
   });
 
   res.status(200).json({
     success: true,
-    message: 'User delete in successfully',
+    message: "User delete in successfully",
     user,
   });
 });
@@ -141,7 +141,7 @@ export const listAllUsers = asyncHandler(async (req, res, next) => {
     status: 200,
     success: true,
     message:
-      result.users.length > 0 ? 'Fetch users successfully' : 'No user found',
+      result.users.length > 0 ? "Fetch users successfully" : "No user found",
     data: result,
   });
 });
@@ -161,12 +161,12 @@ export const userDetails = asyncHandler(async (req, res, next) => {
 
   const user = await User.findById(userId);
   if (!user) {
-    return next(new AppError('Not able to fetch the user details', 401));
+    return next(new AppError("Not able to fetch the user details", 401));
   }
 
   res.status(200).json({
     success: true,
-    message: 'User logged in successfully',
+    message: "User fetch successful",
     user,
   });
 });
@@ -182,11 +182,12 @@ export const userDetails = asyncHandler(async (req, res, next) => {
  */
 export const updateUser = asyncHandler(async (req, res, next) => {
   const userId = req.params.id;
+  console.log(userId);
 
   const user = await User.findById(userId);
   if (!user) {
     return next(
-      new AppError('Not able to fetch the logged-in user details', 401)
+      new AppError("Not able to fetch the logged-in user details", 401)
     );
   }
 
@@ -195,17 +196,13 @@ export const updateUser = asyncHandler(async (req, res, next) => {
     update.avatar = req.user.avatar;
   }
 
-  console.log('update', update);
-
-  const updatedUser = await User.findOneAndUpdate(
-    { _id: req.user.id },
-    update,
-    { new: true }
-  );
+  const updatedUser = await User.findOneAndUpdate({ _id: userId }, update, {
+    new: true,
+  });
 
   res.status(200).json({
     success: true,
-    message: 'User updated successfully',
+    message: "User updated successfully",
     updatedUser,
   });
 });
@@ -222,19 +219,19 @@ export const updateUser = asyncHandler(async (req, res, next) => {
 export const deleteUser = asyncHandler(async (req, res, next) => {
   const userId = req.params.id;
 
-  const deletedUser = await User.findById(userId);
+  const deletedUser = await User.findByIdAndDelete(userId);
 
   if (!deletedUser) {
-    return next(new AppError('Not able to delete user', 401));
+    return next(new AppError("Not able to delete user", 401));
   }
 
   // sent the resetPasswordUrl to the user email
-  const subject = 'Delete Account';
+  const subject = "Delete Account";
 
   let message = ``;
-  if (deletedUser.role === 'ADMIN') {
+  if (deletedUser.role === "ADMIN") {
     message = ` <p>Your account is removed by admin 👨‍💼</p>`;
-  } else if (deletedUser.role === 'USER') {
+  } else if (deletedUser.role === "USER") {
     message = ` <p>Your account is successfully deleted 🫡</p>`;
   }
   try {
@@ -243,12 +240,12 @@ export const deleteUser = asyncHandler(async (req, res, next) => {
     // if email sent successfully send the success response
     res.status(200).json({
       success: true,
-      message: 'User deleted successfully',
+      message: "User deleted successfully",
       deletedUser,
     });
   } catch (error) {
     return next(
-      new AppError(error.message || 'Something went wrong, please try again'),
+      new AppError(error.message || "Something went wrong, please try again"),
       500
     );
   }
@@ -269,13 +266,13 @@ export const createUser = asyncHandler(async (req, res, next) => {
 
   // check if the data is there or not, if not throw error message
   if (!firstName || !email || !password || !mobileNumber) {
-    return next(new AppError('All fields are required', 400));
+    return next(new AppError("All fields are required", 400));
   }
 
   // check if the user already exist
   const userExist = await User.findOne({ email });
   if (userExist) {
-    return next(new AppError('Email already exist', 409));
+    return next(new AppError("Email already exist", 409));
   }
 
   // create new user data object
@@ -291,7 +288,7 @@ export const createUser = asyncHandler(async (req, res, next) => {
   user.password = undefined;
 
   // sent the resetPasswordUrl to the user email
-  const subject = 'New Account';
+  const subject = "New Account";
   const message = `
    <h1>successfully created account🥳 </h1> <p><br>  Name : ${firstName}   <br>  Email : ${email}  <br> password : ${password} </p>
    <b>Note: <i>recommend you to update your password 🧑‍💻</i></b>
@@ -304,12 +301,12 @@ export const createUser = asyncHandler(async (req, res, next) => {
     // if email sent successfully send the success response
     res.status(200).json({
       success: true,
-      message: 'successfully created the account',
+      message: "successfully created the account",
       user,
     });
   } catch (error) {
     return next(
-      new AppError(error.message || 'Something went wrong, please try again'),
+      new AppError(error.message || "Something went wrong, please try again"),
       500
     );
   }
