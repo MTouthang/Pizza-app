@@ -18,14 +18,14 @@ export const Layout = ({ children }) => {
   const role = useSelector((state) => state?.auth?.role);
 
   // handle logout
-  const handleLogout = async (event) => {
-    event.preventDefault();
-
+  const handleLogout = async () => {
     // calling the logout action
     const res = await dispatch(logout());
 
     // redirect to home once logout
+
     if (res?.payload?.success) {
+      window.location.reload();
       navigate('/');
     }
   };
