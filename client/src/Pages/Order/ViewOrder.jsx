@@ -12,19 +12,12 @@ const ViewOrder = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUserOrder = async () => {
-      try {
-        const response = await dispatch(loggedInUserOrder());
-
-        if (response.payload) {
-          setOrders(response.payload); // Update orders state with fetched data
-        }
-      } catch (error) {
-        toast.error('Not able to get order data');
+    (async () => {
+      const res = await dispatch(loggedInUserOrder()); // Dispatch action to fetch product details
+      if (res.payload) {
+        setOrders(response.payload);
       }
-    };
-
-    fetchUserOrder(); // Call the fetchUserOrder function inside useEffect
+    })();
   }, [dispatch]);
 
   const handleOrderCancel = async (id) => {
