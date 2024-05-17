@@ -24,7 +24,8 @@ const Login = () => {
   };
 
   // function to login
-  const handleLogin = async () => {
+  const handleLogin = async (event) => {
+    event.preventDefault();
     if (!loginData.email || !loginData.password) {
       toast.error('Please fill all the fields');
       return;
@@ -35,6 +36,7 @@ const Login = () => {
     if (res?.payload?.success) {
       navigate('/');
     }
+    window.location.reload();
   };
   return (
     <>
