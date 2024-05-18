@@ -301,7 +301,6 @@ const Signup = () => {
                 type="tel"
                 id="mobileNumber"
                 name="mobileNumber"
-                pattern="[789][0-9]{9}"
                 maxLength="12"
                 placeholder="Enter 10-digit mobile number"
                 onChange={handleUserInput}
